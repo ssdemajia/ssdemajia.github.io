@@ -1,0 +1,85 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title>自制评论插件 | dOwOb</title><link rel="stylesheet" type="text/css" href="../../../../css/style.css?v=0.0.0"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/normalize/8.0.1/normalize.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/pure-min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/grids-responsive-min.css"><link rel="stylesheet" href="//lib.baomitu.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//lib.baomitu.com/jquery/3.3.1/jquery.min.js"></script><link rel="icon" mask="" sizes="any" href="../../../../favicon.ico"><link rel="Shortcut Icon" type="image/x-icon" href="../../../../favicon.ico"><link rel="apple-touch-icon" href="../../../../apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="../../../../apple-touch-icon.png"><link rel="alternate" type="application/atom+xml" href="../../../../atom.xml"><script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+ga('create','UA-134074056-1','auto');ga('send','pageview');</script><meta name="generator" content="Hexo 5.4.0"></head><body><div class="body_container"><div id="header"><div class="site-name"><a id="logo" href="../../../../.">dOwOb</a><p class="description"></p></div><div id="nav-menu"><a class="current" href="../../../../."><i class="fa undefined"> 首页</i></a><a href="../../../../archives/"><i class="fa undefined"> 归档</i></a><a href="../../../../about/"><i class="fa undefined"> 关于</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-4"><div class="content_container"><div class="post"><h1 class="post-title">自制评论插件</h1><div class="post-meta">Aug 10, 2019<span> | </span><span class="category"><a href="../../../../categories/%F0%9F%90%B1%E6%9D%82%E8%B0%88/">🐱杂谈</a></span><script src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script><span id="busuanzi_container_page_pv"> | <span id="busuanzi_value_page_pv"></span><span> 阅读</span></span><span class="post-time"><span class="post-meta-item-text"> | </span><span class="post-meta-item-icon"><i class="fa fa-keyboard-o"></i><span class="post-count"> 864</span><span class="post-meta-item-text"> 字</span></span></span><span class="post-time"> | <span class="post-meta-item-icon"><i class="fa fa-hourglass-half"></i><span class="post-count"> 3</span><span class="post-meta-item-text"> 分钟</span></span></span></div><div class="post-content"><p>一开始本来想用disqus的，但是它被墙了，所以退而求其次选择gitment，但是它每次写完文章都需要初始化评论，而且它需要的权限比较高，而且需要评论在issue中，在github首页默认展示评论的issue，看起来好不爽- -所以我想着做一个小轮子，把闲置的云服务器利用起来，然后就有了<a href="https://github.com/ssdemajia/Lisper" target="_blank" rel="noopener">Lisper</a>。</p>
+<h2 id="插件初始化"><a href="#插件初始化" class="headerlink" title="插件初始化"></a>插件初始化</h2><p>插件初始化流程：</p>
+<ol>
+<li>在每个文章底部添加脚本。</li>
+<li>脚本会创建iframe，请求评论页面。</li>
+<li>在评论页面中，请求当前页面的评论并渲染。</li>
+</ol>
+<p>在hexo中加入下面的脚本，这个javascript代码主要是保存page（当前页面）、id（用户id）、el（评论插件挂载的dom元素）配置信息。然后在后面的立即执行函数中通过script标签请求<code>https://comment.dowob.cn/js/comment.js</code>这个文件。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">#comments</span><br><span class="line">  script(type=<span class="string">'text/javascript'</span>).</span><br><span class="line">    <span class="built_in">window</span>.commentConfig = &#123;</span><br><span class="line">      page: <span class="string">'#&#123;page.path&#125;'</span>,</span><br><span class="line">      id: #&#123;theme.lisper&#125;,</span><br><span class="line">      el: <span class="built_in">document</span>.getElementById(<span class="string">'comments'</span>)</span><br><span class="line">    &#125;;</span><br><span class="line">    (<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">      <span class="keyword">var</span> commentScript = <span class="built_in">document</span>.createElement(<span class="string">'script'</span>);</span><br><span class="line">      commentScript.type = <span class="string">'text/javascript'</span>;</span><br><span class="line">      commentScript.async = <span class="literal">true</span>;</span><br><span class="line">      commentScript.src = <span class="string">'https://comment.dowob.cn/js/comment.js'</span>;</span><br><span class="line">      (<span class="built_in">document</span>.getElementsByTagName(<span class="string">'head'</span>)[<span class="number">0</span>]||<span class="built_in">document</span>.getElementsByName(<span class="string">'body'</span>)[<span class="number">0</span>]).appendChild(commentScript);</span><br><span class="line">    &#125;)();</span><br></pre></td></tr></table></figure>
+<p>在<code>comment.js</code>中会创建一个iframe，在这个iframe中加载评论页面，同时使用<code>iframe.contentWindow.postMessage</code>跨域通信，将配置发送过去。因为iframe的内容加载后不会改变iframe窗口的高度，所以主体这边监听iframe发来的高度消息，将主体中iframe的高度进行修改。</p>
+<h2 id="github登陆"><a href="#github登陆" class="headerlink" title="github登陆"></a>github登陆</h2><p>github登陆，需要在github中创建一个oauth app，这时github会分配client_id、client_secret_id。</p>
+<p>当用户点击登陆键后，依次进行下面步骤：</p>
+<ol>
+<li>请求<code>/oauth</code>，服务端会判断用户是否已经登陆，如果没有登陆，重定向到<code>https://github.com/login/oauth/authorize?response_type=code&amp;client_id=${Config.client_id}&amp;redirect_uri=${redirectURI}</code></li>
+<li>这时候github会判断用户是否已经登陆了github，如果没有，会让用户登陆；如果已经登陆会通知用户是否授权github oauth app获取用户信息，默认是public信息。授权成功后，跳转到redirectURI。</li>
+<li>github会重定向到redirectURI，同时带上请求参数code，服务端根据这个code和client_id、client_secret_id来访问<code>https://github.com/login/oauth/access_token?client_id=${Config.client_id}&amp;client_secret=${Config.client_secret_id}&amp;code=${code}</code></li>
+<li>最后github会返回access_token，之后的访问带上这个access_token就能获取用户信息啦。</li>
+</ol>
+<p>这个github登陆卡了我好多天，因为我想实现的效果是用户点击登陆后弹出一个窗口，然后登陆完成后窗口自动关闭，同时原窗口加载用户信息，后面查到方法如下：</p>
+<ol>
+<li>用户的登陆使用<code>let win = window.open(&#39;/oauth&#39;)</code>来打开新窗口。</li>
+<li>在脚本初始化后，对window监听message事件，如果这个事件是登陆完成（<code>done</code>）那么加载用户信息。</li>
+<li>当用户在新窗口完成登陆后，github重定向<code>/oauth/login?code=3213sad</code>，服务器处理完这个请求后，返回一个<code>blank.ejs</code></li>
+<li>在<code>blank.ejs</code>中通过window.opener.postMessage发送请求完成<code>done</code>的信息，评论页面的<code>message</code>事件处理函数便会执行，然后<code>blank.ejs</code>自己关闭。</li>
+</ol>
+<p>之所以这么麻烦主要还是因为跨域。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ol>
+<li><p>nginx支持https <a href="https://liluyang.me/2019/04/03/20190403_HTTPS 配置教程/" target="_blank" rel="noopener">https://liluyang.me/2019/04/03/20190403_HTTPS%20%E9%85%8D%E7%BD%AE%E6%95%99%E7%A8%8B/</a></p>
+</li>
+<li><p>nodejs mysql 语句生成器<a href="http://knexjs.org/" target="_blank" rel="noopener">http://knexjs.org/</a></p>
+</li>
+<li><p>iframe resize <a href="https://github.com/davidjbradshaw/iframe-resizer" target="_blank" rel="noopener">https://github.com/davidjbradshaw/iframe-resizer</a></p>
+</li>
+<li><p>另一个评论插件的实现 <a href="http://blog.cgsdream.org/2017/09/21/bye-disqus/" target="_blank" rel="noopener">http://blog.cgsdream.org/2017/09/21/bye-disqus/</a></p>
+</li>
+</ol>
+</div><div><ul class="post-copyright"><li class="post-copyright-author"><strong>本文作者：</strong>ss</li><li class="post-copyright-link"><strong>本文链接：</strong><a href="/2019/08/10/自制评论插件/">https://dowob.cn/2019/08/10/%E8%87%AA%E5%88%B6%E8%AF%84%E8%AE%BA%E6%8F%92%E4%BB%B6/</a></li><li class="post-copyright-license"><strong>版权声明：</strong>本站所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/cn/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0 CN</a> 许可协议。转载请注明出处！</li></ul></div><br><div class="tags"><a href="../../../../tags/%E8%AF%84%E8%AE%BA%E6%8F%92%E4%BB%B6/">评论插件</a></div><div class="post-nav"><a class="pre" href="../../../09/13/x64%E6%B1%87%E7%BC%96%E4%BB%8B%E7%BB%8D/">x64汇编介绍</a><a class="next" href="../../03/%E5%AE%9E%E9%AA%8C%E5%90%A7-py137/">实验吧 py137</a></div><div id="comments"><div id="disqus_thread"><div class="btn_click_load"><button class="disqus_click_btn">阅读评论（请确保 Disqus 可以正常加载）</button></div><script type="text/javascript">var disqus_config = function () {
+    this.page.url = 'https://dowob.cn/2019/08/10/自制评论插件/';
+    this.page.identifier = '2019/08/10/自制评论插件/';
+    this.page.title = '自制评论插件';
+  };</script><script type="text/javascript" id="disqus-lazy-load-script">$.ajax({
+url: 'https://disqus.com/next/config.json',
+timeout: 2500,
+type: 'GET',
+success: function(){
+  var d = document;
+  var s = d.createElement('script');
+  s.src = '//dowob.disqus.com/embed.js';
+  s.setAttribute('data-timestamp', + new Date());
+  (d.head || d.body).appendChild(s);
+  $('.disqus_click_btn').css('display', 'none');
+},
+error: function() {
+  $('.disqus_click_btn').css('display', 'block');
+}
+});</script><script type="text/javascript" id="disqus-click-load">$('.btn_click_load').click(() => {  //click to load comments
+    (() => { // DON'T EDIT BELOW THIS LINE
+        var d = document;
+        var s = d.createElement('script');
+        s.src = '//dowob.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', + new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+    $('.disqus_click_btn').css('display','none');
+});</script><script type="text/javascript" id="disqus-count-script">$(function() {
+     var xhr = new XMLHttpRequest();
+     xhr.open('GET', '//disqus.com/next/config.json', true);
+     xhr.timeout = 2500;
+     xhr.onreadystatechange = function () {
+       if (xhr.readyState === 4 && xhr.status === 200) {
+         $('.post-meta .post-comments-count').show();
+         var s = document.createElement('script');
+         s.id = 'dsq-count-scr';
+         s.src = 'https://dowob.disqus.com/count.js';
+         s.async = true;
+         (document.head || document.body).appendChild(s);
+       }
+     };
+     xhr.ontimeout = function () { xhr.abort(); };
+     xhr.send(null);
+   });  </script></div></div></div></div></div><div class="pure-u-1 pure-u-md-4"><div id="footer">Copyright © 2021 <a href="../../../../." rel="nofollow">dOwOb.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/ssdemajia"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/ssdemajia"> SS.</a><a rel="nofollow" target="_blank" href="http://www.beian.miit.gov.cn/"> 浙ICP备18028659号</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="../../../../js/totop.js?v=0.0.0" async></script><script type="text/javascript" src="../../../../js/codeblock-resizer.js?v=0.0.0"></script><script type="text/javascript" src="../../../../js/smartresize.js?v=0.0.0"></script></div></body></html>

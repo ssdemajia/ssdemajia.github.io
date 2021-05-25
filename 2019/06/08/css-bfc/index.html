@@ -1,0 +1,123 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title>CSS BFC布局以及浮动问题 | dOwOb</title><link rel="stylesheet" type="text/css" href="../../../../css/style.css?v=0.0.0"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/normalize/8.0.1/normalize.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/pure-min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/grids-responsive-min.css"><link rel="stylesheet" href="//lib.baomitu.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//lib.baomitu.com/jquery/3.3.1/jquery.min.js"></script><link rel="icon" mask="" sizes="any" href="../../../../favicon.ico"><link rel="Shortcut Icon" type="image/x-icon" href="../../../../favicon.ico"><link rel="apple-touch-icon" href="../../../../apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="../../../../apple-touch-icon.png"><link rel="alternate" type="application/atom+xml" href="../../../../atom.xml"><script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+ga('create','UA-134074056-1','auto');ga('send','pageview');</script><meta name="generator" content="Hexo 5.4.0"></head><body><div class="body_container"><div id="header"><div class="site-name"><a id="logo" href="../../../../.">dOwOb</a><p class="description"></p></div><div id="nav-menu"><a class="current" href="../../../../."><i class="fa undefined"> 首页</i></a><a href="../../../../archives/"><i class="fa undefined"> 归档</i></a><a href="../../../../about/"><i class="fa undefined"> 关于</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-4"><div class="content_container"><div class="post"><h1 class="post-title">CSS BFC布局以及浮动问题</h1><div class="post-meta">Jun 8, 2019<span> | </span><span class="category"><a href="../../../../categories/%F0%9F%8C%B2%E5%89%8D%E7%AB%AF/">🌲前端</a></span><script src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script><span id="busuanzi_container_page_pv"> | <span id="busuanzi_value_page_pv"></span><span> 阅读</span></span><span class="post-time"><span class="post-meta-item-text"> | </span><span class="post-meta-item-icon"><i class="fa fa-keyboard-o"></i><span class="post-count"> 823</span><span class="post-meta-item-text"> 字</span></span></span><span class="post-time"> | <span class="post-meta-item-icon"><i class="fa fa-hourglass-half"></i><span class="post-count"> 3</span><span class="post-meta-item-text"> 分钟</span></span></span></div><div class="post-content"><h2 id="BFC布局"><a href="#BFC布局" class="headerlink" title="BFC布局"></a>BFC布局</h2><p>BFC（Block， Formatting context）块级格式化上下文，它规定了渲染规则，是块盒子布局过程发生的区域。</p>
+<p><strong>Box</strong>是CSS布局的基本对象和单位。一个页面由很多个BOX组成，不同的类型的Box会参与不同的Formatting context（即如何被渲染）。</p>
+<p>Box类型：block-level box（display：block）、inline-level box（display：inline）。</p>
+<p><strong>Formatting context</strong>是页面渲染上下文。</p>
+<h2 id="BFC布局规则"><a href="#BFC布局规则" class="headerlink" title="BFC布局规则"></a>BFC布局规则</h2><ol>
+<li><p>内部的Box会在垂直方向，一个接一个地放置。</p>
+</li>
+<li><p>Box垂直方向距离由margin决定。在同一个BFC的两个相邻Box的margin会发生重叠，<strong>非同一BFC就不会重叠。</strong></p>
+<p>可以看到下面例子中两个div aside和main之间的margin只有50px。在main外面加上out-main这个div，同时让out-main成为BFC后，main和aside的margin就不会重叠了。</p>
+
+
+<iframe height="265" style="width: 100%;" scrolling="no" title="BFC Box之间margin重叠" src="//codepen.io/shaoshuai1105/embed/OYKbQg/?height=265&theme-id=dark&default-tab=html,result" frameborder="no" allowtransparency="true" allowfullscreen="true">
+  See the Pen <a href="https://codepen.io/shaoshuai1105/pen/OYKbQg/" target="_blank" rel="noopener">BFC Box之间margin重叠</a> by shaoshuai1105
+  (<a href="https://codepen.io/shaoshuai1105" target="_blank" rel="noopener">@shaoshuai1105</a>) on <a href="https://codepen.io" target="_blank" rel="noopener">CodePen</a>.
+</iframe>
+
+
+</li>
+<li><p>计算BFC高度时，浮动元素也参与计算。</p>
+</li>
+<li><p>不会与float box重叠，也就是<strong>这个元素不会被float的元素覆盖</strong>。下面的例子就是通过overflow:hidden将main变为BFC，这样aside就不会挡住main。这也就是清除浮动的原理。</p>
+
+
+<iframe height="265" style="width: 100%;" scrolling="no" title="bfc" src="//codepen.io/shaoshuai1105/embed/wbVoag/?height=265&theme-id=dark&default-tab=html,result" frameborder="no" allowtransparency="true" allowfullscreen="true">
+  See the Pen <a href="https://codepen.io/shaoshuai1105/pen/wbVoag/" target="_blank" rel="noopener">bfc</a> by shaoshuai1105
+  (<a href="https://codepen.io/shaoshuai1105" target="_blank" rel="noopener">@shaoshuai1105</a>) on <a href="https://codepen.io" target="_blank" rel="noopener">CodePen</a>.
+</iframe>
+
+</li>
+<li><p>BFC是页面上的独立容器，容器里面的子元素不会影响到外面的元素，同样外面的元素（浮动元素）也不会影响容器。</p>
+</li>
+</ol>
+<h2 id="生成BFC"><a href="#生成BFC" class="headerlink" title="生成BFC"></a>生成BFC</h2><p>下面列的方式会创建块格式化上下文：</p>
+<ol>
+<li>根元素（<code>&lt;html&gt;</code>)</li>
+<li>浮动元素（float 不是none）,这也就是浮动外层元素来清除内部元素的浮动。</li>
+<li>绝对定位元素（position: absolute)</li>
+<li>行内块元素（display：inline-block)</li>
+<li>overflow不会visible的块级元素。</li>
+<li>display: flow-root</li>
+<li>display:flex的子元素</li>
+<li>display:grid的子元素</li>
+<li>表格单元格（display:table-cell)</li>
+</ol>
+<h2 id="浮动问题"><a href="#浮动问题" class="headerlink" title="浮动问题"></a>浮动问题</h2><h3 id="问题1-浮动元素的高度大于父元素"><a href="#问题1-浮动元素的高度大于父元素" class="headerlink" title="问题1. 浮动元素的高度大于父元素"></a>问题1. 浮动元素的高度大于父元素</h3><p>当浮动元素的高度大于父元素，会出现浮动元素超出父元素。这里将父元素设置为BFC，就可以包含进浮动元素，<strong>因为BFC计算高度时会考虑浮动元素。</strong></p>
+
+
+<iframe height="265" style="width: 100%;" scrolling="no" title="YbmpYw" src="//codepen.io/shaoshuai1105/embed/YbmpYw/?height=265&theme-id=dark&default-tab=css,result" frameborder="no" allowtransparency="true" allowfullscreen="true">
+  See the Pen <a href="https://codepen.io/shaoshuai1105/pen/YbmpYw/" target="_blank" rel="noopener">YbmpYw</a> by shaoshuai1105
+  (<a href="https://codepen.io/shaoshuai1105" target="_blank" rel="noopener">@shaoshuai1105</a>) on <a href="https://codepen.io" target="_blank" rel="noopener">CodePen</a>.
+</iframe>
+
+
+<h3 id="问题2-后面的元素因为前面的浮动而提前"><a href="#问题2-后面的元素因为前面的浮动而提前" class="headerlink" title="问题2.后面的元素因为前面的浮动而提前"></a>问题2.后面的元素因为前面的浮动而提前</h3><p>比如这里的footer如果不使用clear:left，那么它就会为了围绕浮动的侧边栏而被提前到content后面。</p>
+
+
+<iframe height="265" style="width: 100%;" scrolling="no" title="页脚被提前" src="//codepen.io/shaoshuai1105/embed/MdNbqz/?height=265&theme-id=dark&default-tab=result" frameborder="no" allowtransparency="true" allowfullscreen="true">
+  See the Pen <a href="https://codepen.io/shaoshuai1105/pen/MdNbqz/" target="_blank" rel="noopener">页脚被提前</a> by shaoshuai1105
+  (<a href="https://codepen.io/shaoshuai1105" target="_blank" rel="noopener">@shaoshuai1105</a>) on <a href="https://codepen.io" target="_blank" rel="noopener">CodePen</a>.
+</iframe>
+
+
+<h3 id="问题3-同一BFC的元素外边距合并"><a href="#问题3-同一BFC的元素外边距合并" class="headerlink" title="问题3.同一BFC的元素外边距合并"></a>问题3.同一BFC的元素外边距合并</h3><p>当一个BFC中两个元素相交的地方有外边距，那么外边距合并。child和parent的margin-top会重叠。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"parent"</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"child"</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">style</span>&gt;</span></span><br><span class="line">.child &#123;</span><br><span class="line">	margin-top: 50px;</span><br><span class="line">	height: 200px;</span><br><span class="line">	width: 200px;</span><br><span class="line">	background: #eee;</span><br><span class="line">&#125;</span><br><span class="line">.parent &#123;</span><br><span class="line">	margin-top: 50px;</span><br><span class="line">&#125;</span><br><span class="line"><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>外边距合并问题出现在：</p>
+<ol>
+<li>相邻元素之间</li>
+<li>父元素与其第一或最后一个元素之间，对于<strong>第一个元素</strong>使用BFC可以解决，而<strong>最后一个元素</strong>需要设置父元素的padding-bottom或者border-bottom、height、max-height等设置让最后一个元素强制与父元素的下边框分离，这样margin-bottom就不会重叠了。</li>
+<li>空的块级元素</li>
+</ol>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ol>
+<li>mdn BFC <a href="https://developer.mozilla.org/zh-CN/docs/Web/Guide/CSS/Block_formatting_context" target="_blank" rel="noopener">https://developer.mozilla.org/zh-CN/docs/Web/Guide/CSS/Block_formatting_context</a></li>
+<li>[布局概念] 关于CSS-BFC深入理解 <a href="https://juejin.im/post/5909db2fda2f60005d2093db" target="_blank" rel="noopener">https://juejin.im/post/5909db2fda2f60005d2093db</a></li>
+</ol>
+</div><div><ul class="post-copyright"><li class="post-copyright-author"><strong>本文作者：</strong>ss</li><li class="post-copyright-link"><strong>本文链接：</strong><a href="/2019/06/08/css-bfc/">https://dowob.cn/2019/06/08/css-bfc/</a></li><li class="post-copyright-license"><strong>版权声明：</strong>本站所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/cn/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0 CN</a> 许可协议。转载请注明出处！</li></ul></div><br><div class="tags"></div><div class="post-nav"><a class="pre" href="../../13/javascript%E7%BC%96%E7%A8%8B%E9%A2%98/">Javascript编程题</a><a class="next" href="../../05/element-ui-button-border-layout-container-link/">element-ui button layout container input</a></div><div id="comments"><div id="disqus_thread"><div class="btn_click_load"><button class="disqus_click_btn">阅读评论（请确保 Disqus 可以正常加载）</button></div><script type="text/javascript">var disqus_config = function () {
+    this.page.url = 'https://dowob.cn/2019/06/08/css-bfc/';
+    this.page.identifier = '2019/06/08/css-bfc/';
+    this.page.title = 'CSS BFC布局以及浮动问题';
+  };</script><script type="text/javascript" id="disqus-lazy-load-script">$.ajax({
+url: 'https://disqus.com/next/config.json',
+timeout: 2500,
+type: 'GET',
+success: function(){
+  var d = document;
+  var s = d.createElement('script');
+  s.src = '//dowob.disqus.com/embed.js';
+  s.setAttribute('data-timestamp', + new Date());
+  (d.head || d.body).appendChild(s);
+  $('.disqus_click_btn').css('display', 'none');
+},
+error: function() {
+  $('.disqus_click_btn').css('display', 'block');
+}
+});</script><script type="text/javascript" id="disqus-click-load">$('.btn_click_load').click(() => {  //click to load comments
+    (() => { // DON'T EDIT BELOW THIS LINE
+        var d = document;
+        var s = d.createElement('script');
+        s.src = '//dowob.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', + new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+    $('.disqus_click_btn').css('display','none');
+});</script><script type="text/javascript" id="disqus-count-script">$(function() {
+     var xhr = new XMLHttpRequest();
+     xhr.open('GET', '//disqus.com/next/config.json', true);
+     xhr.timeout = 2500;
+     xhr.onreadystatechange = function () {
+       if (xhr.readyState === 4 && xhr.status === 200) {
+         $('.post-meta .post-comments-count').show();
+         var s = document.createElement('script');
+         s.id = 'dsq-count-scr';
+         s.src = 'https://dowob.disqus.com/count.js';
+         s.async = true;
+         (document.head || document.body).appendChild(s);
+       }
+     };
+     xhr.ontimeout = function () { xhr.abort(); };
+     xhr.send(null);
+   });  </script></div></div></div></div></div><div class="pure-u-1 pure-u-md-4"><div id="footer">Copyright © 2021 <a href="../../../../." rel="nofollow">dOwOb.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/ssdemajia"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/ssdemajia"> SS.</a><a rel="nofollow" target="_blank" href="http://www.beian.miit.gov.cn/"> 浙ICP备18028659号</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="../../../../js/totop.js?v=0.0.0" async></script><script type="text/javascript" src="../../../../js/codeblock-resizer.js?v=0.0.0"></script><script type="text/javascript" src="../../../../js/smartresize.js?v=0.0.0"></script></div></body></html>

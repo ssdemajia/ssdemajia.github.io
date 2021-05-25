@@ -1,0 +1,492 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>dOwOb</title>
+  
+  
+  <link href="https://dowob.cn/atom.xml" rel="self"/>
+  
+  <link href="https://dowob.cn/"/>
+  <updated>2021-05-25T02:25:41.421Z</updated>
+  <id>https://dowob.cn/</id>
+  
+  <author>
+    <name>ss</name>
+    
+  </author>
+  
+  <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>翻译 kernel address space layout randomization</title>
+    <link href="https://dowob.cn/2020/03/08/%E7%BF%BB%E8%AF%91kernel-address-space-layout-randomization/"/>
+    <id>https://dowob.cn/2020/03/08/%E7%BF%BB%E8%AF%91kernel-address-space-layout-randomization/</id>
+    <published>2020-03-08T02:54:02.000Z</published>
+    <updated>2021-05-25T02:25:41.421Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html"></summary>
+        
+      
+    
+    
+    
+    
+  </entry>
+  
+  <entry>
+    <title>翻译 qemu tcg 介绍</title>
+    <link href="https://dowob.cn/2020/02/22/%E7%BF%BB%E8%AF%91qemu-tcg-%E4%BB%8B%E7%BB%8D/"/>
+    <id>https://dowob.cn/2020/02/22/%E7%BF%BB%E8%AF%91qemu-tcg-%E4%BB%8B%E7%BB%8D/</id>
+    <published>2020-02-22T07:11:42.000Z</published>
+    <updated>2021-05-25T02:25:41.422Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html"></summary>
+        
+      
+    
+    
+    
+    
+  </entry>
+  
+  <entry>
+    <title>翻译 afl白皮书</title>
+    <link href="https://dowob.cn/2020/02/13/afl%E7%99%BD%E7%9A%AE%E4%B9%A6/"/>
+    <id>https://dowob.cn/2020/02/13/afl%E7%99%BD%E7%9A%AE%E4%B9%A6/</id>
+    <published>2020-02-13T07:55:54.000Z</published>
+    <updated>2021-05-25T02:25:41.341Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html"></summary>
+        
+      
+    
+    
+    
+    
+    <category term="afl" scheme="https://dowob.cn/tags/afl/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>给xv6添加系统调用</title>
+    <link href="https://dowob.cn/2019/09/18/%E7%BB%99xv6%E6%B7%BB%E5%8A%A0%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8/"/>
+    <id>https://dowob.cn/2019/09/18/%E7%BB%99xv6%E6%B7%BB%E5%8A%A0%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8/</id>
+    <published>2019-09-18T08:54:36.000Z</published>
+    <updated>2021-05-25T02:25:41.419Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html"></summary>
+        
+      
+    
+    
+    
+    <category term="🐱杂谈" scheme="https://dowob.cn/categories/%F0%9F%90%B1%E6%9D%82%E8%B0%88/"/>
+    
+    
+    <category term="xv6" scheme="https://dowob.cn/tags/xv6/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>x64汇编介绍</title>
+    <link href="https://dowob.cn/2019/09/13/x64%E6%B1%87%E7%BC%96%E4%BB%8B%E7%BB%8D/"/>
+    <id>https://dowob.cn/2019/09/13/x64%E6%B1%87%E7%BC%96%E4%BB%8B%E7%BB%8D/</id>
+    <published>2019-09-13T06:23:31.000Z</published>
+    <updated>2021-05-25T02:25:41.381Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html"></summary>
+        
+      
+    
+    
+    
+    <category term="🔒安全" scheme="https://dowob.cn/categories/%F0%9F%94%92%E5%AE%89%E5%85%A8/"/>
+    
+    
+    <category term="安全" scheme="https://dowob.cn/tags/%E5%AE%89%E5%85%A8/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>自制评论插件</title>
+    <link href="https://dowob.cn/2019/08/10/%E8%87%AA%E5%88%B6%E8%AF%84%E8%AE%BA%E6%8F%92%E4%BB%B6/"/>
+    <id>https://dowob.cn/2019/08/10/%E8%87%AA%E5%88%B6%E8%AF%84%E8%AE%BA%E6%8F%92%E4%BB%B6/</id>
+    <published>2019-08-10T15:38:07.000Z</published>
+    <updated>2021-05-25T02:25:41.423Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html"></summary>
+        
+      
+    
+    
+    
+    <category term="🐱杂谈" scheme="https://dowob.cn/categories/%F0%9F%90%B1%E6%9D%82%E8%B0%88/"/>
+    
+    
+    <category term="评论插件" scheme="https://dowob.cn/tags/%E8%AF%84%E8%AE%BA%E6%8F%92%E4%BB%B6/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>实验吧 py137</title>
+    <link href="https://dowob.cn/2019/08/03/%E5%AE%9E%E9%AA%8C%E5%90%A7-py137/"/>
+    <id>https://dowob.cn/2019/08/03/%E5%AE%9E%E9%AA%8C%E5%90%A7-py137/</id>
+    <published>2019-08-03T14:16:10.000Z</published>
+    <updated>2021-05-25T02:25:41.400Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html"></summary>
+        
+      
+    
+    
+    
+    <category term="🔒安全" scheme="https://dowob.cn/categories/%F0%9F%94%92%E5%AE%89%E5%85%A8/"/>
+    
+    
+    <category term="ctf" scheme="https://dowob.cn/tags/ctf/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>shellcode编写</title>
+    <link href="https://dowob.cn/2019/07/26/shellcode%E7%BC%96%E5%86%99/"/>
+    <id>https://dowob.cn/2019/07/26/shellcode%E7%BC%96%E5%86%99/</id>
+    <published>2019-07-26T15:50:39.000Z</published>
+    <updated>2021-05-25T02:25:41.370Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html"></summary>
+        
+      
+    
+    
+    
+    <category term="🔒安全" scheme="https://dowob.cn/categories/%F0%9F%94%92%E5%AE%89%E5%85%A8/"/>
+    
+    
+    <category term="ctf" scheme="https://dowob.cn/tags/ctf/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>实验吧 debug32</title>
+    <link href="https://dowob.cn/2019/07/25/%E5%AE%9E%E9%AA%8C%E5%90%A7-debug32/"/>
+    <id>https://dowob.cn/2019/07/25/%E5%AE%9E%E9%AA%8C%E5%90%A7-debug32/</id>
+    <published>2019-07-25T06:43:15.000Z</published>
+    <updated>2021-05-25T02:25:41.399Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html"></summary>
+        
+      
+    
+    
+    
+    <category term="🔒安全" scheme="https://dowob.cn/categories/%F0%9F%94%92%E5%AE%89%E5%85%A8/"/>
+    
+    
+    <category term="ctf" scheme="https://dowob.cn/tags/ctf/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>实验吧 whatamitoyou</title>
+    <link href="https://dowob.cn/2019/07/24/%E5%AE%9E%E9%AA%8C%E5%90%A7-whatmaitoyou/"/>
+    <id>https://dowob.cn/2019/07/24/%E5%AE%9E%E9%AA%8C%E5%90%A7-whatmaitoyou/</id>
+    <published>2019-07-24T12:40:58.000Z</published>
+    <updated>2021-05-25T02:25:41.402Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;听说ctf挺好玩，刚好最近在看汇编，上实验吧找到了这道题，上手这道题的时候一脸懵逼，只有一个whatamitoyou的文件，在macOS下发现无法运行，然后放到虚拟机ubuntu中运行，显示&lt;code&gt;segment fault&lt;/code&gt;&lt;br&gt;</summary>
+    
+    
+    
+    <category term="🔒安全" scheme="https://dowob.cn/categories/%F0%9F%94%92%E5%AE%89%E5%85%A8/"/>
+    
+    
+    <category term="ctf" scheme="https://dowob.cn/tags/ctf/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>css选择器</title>
+    <link href="https://dowob.cn/2019/07/23/css%E9%80%89%E6%8B%A9%E5%99%A8/"/>
+    <id>https://dowob.cn/2019/07/23/css%E9%80%89%E6%8B%A9%E5%99%A8/</id>
+    <published>2019-07-23T03:21:04.000Z</published>
+    <updated>2021-05-25T02:25:41.345Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html"></summary>
+        
+      
+    
+    
+    
+    <category term="🌲前端" scheme="https://dowob.cn/categories/%F0%9F%8C%B2%E5%89%8D%E7%AB%AF/"/>
+    
+    
+    <category term="css" scheme="https://dowob.cn/tags/css/"/>
+    
+    <category term="基础" scheme="https://dowob.cn/tags/%E5%9F%BA%E7%A1%80/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>css 伪元素和伪类</title>
+    <link href="https://dowob.cn/2019/07/23/css-%E4%BC%AA%E5%85%83%E7%B4%A0%E5%92%8C%E4%BC%AA%E7%B1%BB/"/>
+    <id>https://dowob.cn/2019/07/23/css-%E4%BC%AA%E5%85%83%E7%B4%A0%E5%92%8C%E4%BC%AA%E7%B1%BB/</id>
+    <published>2019-07-23T02:47:08.000Z</published>
+    <updated>2021-05-25T02:25:41.345Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html"></summary>
+        
+      
+    
+    
+    
+    <category term="🌲前端" scheme="https://dowob.cn/categories/%F0%9F%8C%B2%E5%89%8D%E7%AB%AF/"/>
+    
+    
+    <category term="css" scheme="https://dowob.cn/tags/css/"/>
+    
+    <category term="基础" scheme="https://dowob.cn/tags/%E5%9F%BA%E7%A1%80/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>华硕AC66U-B1路由器配置ssr</title>
+    <link href="https://dowob.cn/2019/07/19/%E5%8D%8E%E7%A1%95AC66U-B1%E9%85%8D%E7%BD%AEssr/"/>
+    <id>https://dowob.cn/2019/07/19/%E5%8D%8E%E7%A1%95AC66U-B1%E9%85%8D%E7%BD%AEssr/</id>
+    <published>2019-07-19T07:32:14.000Z</published>
+    <updated>2021-05-25T02:25:41.390Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html"></summary>
+        
+      
+    
+    
+    
+    <category term="🐱杂谈" scheme="https://dowob.cn/categories/%F0%9F%90%B1%E6%9D%82%E8%B0%88/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>实现modal模态框</title>
+    <link href="https://dowob.cn/2019/07/16/%E5%AE%9E%E7%8E%B0modal%E6%A8%A1%E6%80%81%E6%A1%86/"/>
+    <id>https://dowob.cn/2019/07/16/%E5%AE%9E%E7%8E%B0modal%E6%A8%A1%E6%80%81%E6%A1%86/</id>
+    <published>2019-07-16T14:55:09.000Z</published>
+    <updated>2021-05-25T02:25:41.398Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;实现的关键是两个覆盖全屏的div，第一个是用于展示对话框（dialog），第二个是modal用于将背景变暗(modal)。然后点击button后dialog这个div从display:none变为正常显示，当对话框展示出来后点击modal后将modal和dialog都隐藏。&lt;/p&gt;
+&lt;p&gt;对于覆盖全屏的div使用position:fixed来固定。通过设置z-index使它们在全局之上。&lt;br&gt;</summary>
+    
+    
+    
+    <category term="🌲前端" scheme="https://dowob.cn/categories/%F0%9F%8C%B2%E5%89%8D%E7%AB%AF/"/>
+    
+    
+    <category term="javascript" scheme="https://dowob.cn/tags/javascript/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>常见排序方法</title>
+    <link href="https://dowob.cn/2019/07/08/%E5%B8%B8%E8%A7%81%E6%8E%92%E5%BA%8F%E6%96%B9%E6%B3%95/"/>
+    <id>https://dowob.cn/2019/07/08/%E5%B8%B8%E8%A7%81%E6%8E%92%E5%BA%8F%E6%96%B9%E6%B3%95/</id>
+    <published>2019-07-08T05:03:00.000Z</published>
+    <updated>2021-05-25T02:25:41.416Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html"></summary>
+        
+      
+    
+    
+    
+    <category term="🐱杂谈" scheme="https://dowob.cn/categories/%F0%9F%90%B1%E6%9D%82%E8%B0%88/"/>
+    
+    
+    <category term="排序" scheme="https://dowob.cn/tags/%E6%8E%92%E5%BA%8F/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Javascript编程题</title>
+    <link href="https://dowob.cn/2019/06/13/javascript%E7%BC%96%E7%A8%8B%E9%A2%98/"/>
+    <id>https://dowob.cn/2019/06/13/javascript%E7%BC%96%E7%A8%8B%E9%A2%98/</id>
+    <published>2019-06-13T02:48:57.000Z</published>
+    <updated>2021-05-25T02:25:41.347Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html"></summary>
+        
+      
+    
+    
+    
+    <category term="🌲前端" scheme="https://dowob.cn/categories/%F0%9F%8C%B2%E5%89%8D%E7%AB%AF/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>CSS BFC布局以及浮动问题</title>
+    <link href="https://dowob.cn/2019/06/08/css-bfc/"/>
+    <id>https://dowob.cn/2019/06/08/css-bfc/</id>
+    <published>2019-06-08T01:36:09.000Z</published>
+    <updated>2021-05-25T02:25:41.344Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html"></summary>
+        
+      
+    
+    
+    
+    <category term="🌲前端" scheme="https://dowob.cn/categories/%F0%9F%8C%B2%E5%89%8D%E7%AB%AF/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>element-ui button layout container input</title>
+    <link href="https://dowob.cn/2019/06/05/element-ui-button-border-layout-container-link/"/>
+    <id>https://dowob.cn/2019/06/05/element-ui-button-border-layout-container-link/</id>
+    <published>2019-06-05T06:07:12.000Z</published>
+    <updated>2021-05-25T02:25:41.346Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html"></summary>
+        
+      
+    
+    
+    
+    <category term="🌲前端" scheme="https://dowob.cn/categories/%F0%9F%8C%B2%E5%89%8D%E7%AB%AF/"/>
+    
+    
+    <category term="vue" scheme="https://dowob.cn/tags/vue/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>python rq worker</title>
+    <link href="https://dowob.cn/2019/05/29/python-rq-worker/"/>
+    <id>https://dowob.cn/2019/05/29/python-rq-worker/</id>
+    <published>2019-05-29T06:57:43.000Z</published>
+    <updated>2021-05-25T02:25:41.357Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html"></summary>
+        
+      
+    
+    
+    
+    <category term="🐍python" scheme="https://dowob.cn/categories/%F0%9F%90%8Dpython/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>redis pipelining</title>
+    <link href="https://dowob.cn/2019/05/23/redis-pipelining/"/>
+    <id>https://dowob.cn/2019/05/23/redis-pipelining/</id>
+    <published>2019-05-23T01:28:56.000Z</published>
+    <updated>2021-05-25T02:25:41.361Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html"></summary>
+        
+      
+    
+    
+    
+    <category term="🐱杂谈" scheme="https://dowob.cn/categories/%F0%9F%90%B1%E6%9D%82%E8%B0%88/"/>
+    
+    
+  </entry>
+  
+</feed>
