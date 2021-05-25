@@ -2,7 +2,7 @@
 (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
 m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
 })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-ga('create','UA-134074056-1','auto');ga('send','pageview');</script><meta name="generator" content="Hexo 5.4.0"></head><body><div class="body_container"><div id="header"><div class="site-name"><a id="logo" href="../../../../.">dOwOb</a><p class="description"></p></div><div id="nav-menu"><a class="current" href="../../../../."><i class="fa undefined"> 首页</i></a><a href="../../../../archives/"><i class="fa undefined"> 归档</i></a><a href="../../../../about/"><i class="fa undefined"> 关于</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-4"><div class="content_container"><div class="post"><h1 class="post-title">CSS BFC布局以及浮动问题</h1><div class="post-meta">Jun 8, 2019<span> | </span><span class="category"><a href="../../../../categories/%F0%9F%8C%B2%E5%89%8D%E7%AB%AF/">🌲前端</a></span><script src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script><span id="busuanzi_container_page_pv"> | <span id="busuanzi_value_page_pv"></span><span> 阅读</span></span><span class="post-time"><span class="post-meta-item-text"> | </span><span class="post-meta-item-icon"><i class="fa fa-keyboard-o"></i><span class="post-count"> 823</span><span class="post-meta-item-text"> 字</span></span></span><span class="post-time"> | <span class="post-meta-item-icon"><i class="fa fa-hourglass-half"></i><span class="post-count"> 3</span><span class="post-meta-item-text"> 分钟</span></span></span></div><div class="post-content"><h2 id="BFC布局"><a href="#BFC布局" class="headerlink" title="BFC布局"></a>BFC布局</h2><p>BFC（Block， Formatting context）块级格式化上下文，它规定了渲染规则，是块盒子布局过程发生的区域。</p>
+ga('create','UA-134074056-1','auto');ga('send','pageview');</script><meta name="generator" content="Hexo 5.4.0"></head><body><div class="body_container"><div id="header"><div class="site-name"><a id="logo" href="../../../../.">dOwOb</a><p class="description"></p></div><div id="nav-menu"><a class="current" href="../../../../."><i class="fa undefined"> 首页</i></a><a href="../../../../archives/"><i class="fa undefined"> 归档</i></a><a href="../../../../about/"><i class="fa undefined"> 关于</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-4"><div class="content_container"><div class="post"><h1 class="post-title">CSS BFC布局以及浮动问题</h1><div class="post-meta">Jun 8, 2019<span> | </span><span class="category"><a href="../../../../categories/%F0%9F%8C%B2%E5%89%8D%E7%AB%AF/">🌲前端</a></span><script src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script><span id="busuanzi_container_page_pv"> | <span id="busuanzi_value_page_pv"></span><span> 阅读</span></span><span class="post-time"><span class="post-meta-item-text"> | </span><span class="post-meta-item-icon"><i class="fa fa-keyboard-o"></i><span class="post-count"> 827</span><span class="post-meta-item-text"> 字</span></span></span><span class="post-time"> | <span class="post-meta-item-icon"><i class="fa fa-hourglass-half"></i><span class="post-count"> 3</span><span class="post-meta-item-text"> 分钟</span></span></span></div><div class="post-content"><h2 id="BFC布局"><a href="#BFC布局" class="headerlink" title="BFC布局"></a>BFC布局</h2><p>BFC（Block， Formatting context）块级格式化上下文，它规定了渲染规则，是块盒子布局过程发生的区域。</p>
 <p><strong>Box</strong>是CSS布局的基本对象和单位。一个页面由很多个BOX组成，不同的类型的Box会参与不同的Formatting context（即如何被渲染）。</p>
 <p>Box类型：block-level box（display：block）、inline-level box（display：inline）。</p>
 <p><strong>Formatting context</strong>是页面渲染上下文。</p>
@@ -14,10 +14,9 @@ ga('create','UA-134074056-1','auto');ga('send','pageview');</script><meta name="
 
 
 <iframe height="265" style="width: 100%;" scrolling="no" title="BFC Box之间margin重叠" src="//codepen.io/shaoshuai1105/embed/OYKbQg/?height=265&theme-id=dark&default-tab=html,result" frameborder="no" allowtransparency="true" allowfullscreen="true">
-  See the Pen <a href="https://codepen.io/shaoshuai1105/pen/OYKbQg/" target="_blank" rel="noopener">BFC Box之间margin重叠</a> by shaoshuai1105
-  (<a href="https://codepen.io/shaoshuai1105" target="_blank" rel="noopener">@shaoshuai1105</a>) on <a href="https://codepen.io" target="_blank" rel="noopener">CodePen</a>.
+  See the Pen <a target="_blank" rel="noopener" href='https://codepen.io/shaoshuai1105/pen/OYKbQg/'>BFC Box之间margin重叠</a> by shaoshuai1105
+  (<a target="_blank" rel="noopener" href='https://codepen.io/shaoshuai1105'>@shaoshuai1105</a>) on <a target="_blank" rel="noopener" href='https://codepen.io'>CodePen</a>.
 </iframe>
-
 
 </li>
 <li><p>计算BFC高度时，浮动元素也参与计算。</p>
@@ -26,10 +25,9 @@ ga('create','UA-134074056-1','auto');ga('send','pageview');</script><meta name="
 
 
 <iframe height="265" style="width: 100%;" scrolling="no" title="bfc" src="//codepen.io/shaoshuai1105/embed/wbVoag/?height=265&theme-id=dark&default-tab=html,result" frameborder="no" allowtransparency="true" allowfullscreen="true">
-  See the Pen <a href="https://codepen.io/shaoshuai1105/pen/wbVoag/" target="_blank" rel="noopener">bfc</a> by shaoshuai1105
-  (<a href="https://codepen.io/shaoshuai1105" target="_blank" rel="noopener">@shaoshuai1105</a>) on <a href="https://codepen.io" target="_blank" rel="noopener">CodePen</a>.
+  See the Pen <a target="_blank" rel="noopener" href='https://codepen.io/shaoshuai1105/pen/wbVoag/'>bfc</a> by shaoshuai1105
+  (<a target="_blank" rel="noopener" href='https://codepen.io/shaoshuai1105'>@shaoshuai1105</a>) on <a target="_blank" rel="noopener" href='https://codepen.io'>CodePen</a>.
 </iframe>
-
 </li>
 <li><p>BFC是页面上的独立容器，容器里面的子元素不会影响到外面的元素，同样外面的元素（浮动元素）也不会影响容器。</p>
 </li>
@@ -50,22 +48,25 @@ ga('create','UA-134074056-1','auto');ga('send','pageview');</script><meta name="
 
 
 <iframe height="265" style="width: 100%;" scrolling="no" title="YbmpYw" src="//codepen.io/shaoshuai1105/embed/YbmpYw/?height=265&theme-id=dark&default-tab=css,result" frameborder="no" allowtransparency="true" allowfullscreen="true">
-  See the Pen <a href="https://codepen.io/shaoshuai1105/pen/YbmpYw/" target="_blank" rel="noopener">YbmpYw</a> by shaoshuai1105
-  (<a href="https://codepen.io/shaoshuai1105" target="_blank" rel="noopener">@shaoshuai1105</a>) on <a href="https://codepen.io" target="_blank" rel="noopener">CodePen</a>.
+  See the Pen <a target="_blank" rel="noopener" href='https://codepen.io/shaoshuai1105/pen/YbmpYw/'>YbmpYw</a> by shaoshuai1105
+  (<a target="_blank" rel="noopener" href='https://codepen.io/shaoshuai1105'>@shaoshuai1105</a>) on <a target="_blank" rel="noopener" href='https://codepen.io'>CodePen</a>.
 </iframe>
+
 
 
 <h3 id="问题2-后面的元素因为前面的浮动而提前"><a href="#问题2-后面的元素因为前面的浮动而提前" class="headerlink" title="问题2.后面的元素因为前面的浮动而提前"></a>问题2.后面的元素因为前面的浮动而提前</h3><p>比如这里的footer如果不使用clear:left，那么它就会为了围绕浮动的侧边栏而被提前到content后面。</p>
 
 
 <iframe height="265" style="width: 100%;" scrolling="no" title="页脚被提前" src="//codepen.io/shaoshuai1105/embed/MdNbqz/?height=265&theme-id=dark&default-tab=result" frameborder="no" allowtransparency="true" allowfullscreen="true">
-  See the Pen <a href="https://codepen.io/shaoshuai1105/pen/MdNbqz/" target="_blank" rel="noopener">页脚被提前</a> by shaoshuai1105
-  (<a href="https://codepen.io/shaoshuai1105" target="_blank" rel="noopener">@shaoshuai1105</a>) on <a href="https://codepen.io" target="_blank" rel="noopener">CodePen</a>.
+  See the Pen <a target="_blank" rel="noopener" href='https://codepen.io/shaoshuai1105/pen/MdNbqz/'>页脚被提前</a> by shaoshuai1105
+  (<a target="_blank" rel="noopener" href='https://codepen.io/shaoshuai1105'>@shaoshuai1105</a>) on <a target="_blank" rel="noopener" href='https://codepen.io'>CodePen</a>.
 </iframe>
 
 
+
 <h3 id="问题3-同一BFC的元素外边距合并"><a href="#问题3-同一BFC的元素外边距合并" class="headerlink" title="问题3.同一BFC的元素外边距合并"></a>问题3.同一BFC的元素外边距合并</h3><p>当一个BFC中两个元素相交的地方有外边距，那么外边距合并。child和parent的margin-top会重叠。</p>
-<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"parent"</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"child"</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">style</span>&gt;</span></span><br><span class="line">.child &#123;</span><br><span class="line">	margin-top: 50px;</span><br><span class="line">	height: 200px;</span><br><span class="line">	width: 200px;</span><br><span class="line">	background: #eee;</span><br><span class="line">&#125;</span><br><span class="line">.parent &#123;</span><br><span class="line">	margin-top: 50px;</span><br><span class="line">&#125;</span><br><span class="line"><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;parent&quot;</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;child&quot;</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">style</span>&gt;</span><span class="css"></span></span><br><span class="line"><span class="css"><span class="selector-class">.child</span> &#123;</span></span><br><span class="line"><span class="css">	<span class="attribute">margin-top</span>: <span class="number">50px</span>;</span></span><br><span class="line"><span class="css">	<span class="attribute">height</span>: <span class="number">200px</span>;</span></span><br><span class="line"><span class="css">	<span class="attribute">width</span>: <span class="number">200px</span>;</span></span><br><span class="line"><span class="css">	<span class="attribute">background</span>: <span class="number">#eee</span>;</span></span><br><span class="line"><span class="css">&#125;</span></span><br><span class="line"><span class="css"><span class="selector-class">.parent</span> &#123;</span></span><br><span class="line"><span class="css">	<span class="attribute">margin-top</span>: <span class="number">50px</span>;</span></span><br><span class="line"><span class="css">&#125;</span></span><br><span class="line"><span class="css"></span><span class="tag">&lt;/<span class="name">style</span>&gt;</span>        </span><br></pre></td></tr></table></figure>
+
 <p>外边距合并问题出现在：</p>
 <ol>
 <li>相邻元素之间</li>
@@ -73,8 +74,8 @@ ga('create','UA-134074056-1','auto');ga('send','pageview');</script><meta name="
 <li>空的块级元素</li>
 </ol>
 <h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ol>
-<li>mdn BFC <a href="https://developer.mozilla.org/zh-CN/docs/Web/Guide/CSS/Block_formatting_context" target="_blank" rel="noopener">https://developer.mozilla.org/zh-CN/docs/Web/Guide/CSS/Block_formatting_context</a></li>
-<li>[布局概念] 关于CSS-BFC深入理解 <a href="https://juejin.im/post/5909db2fda2f60005d2093db" target="_blank" rel="noopener">https://juejin.im/post/5909db2fda2f60005d2093db</a></li>
+<li>mdn BFC <a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/Guide/CSS/Block_formatting_context">https://developer.mozilla.org/zh-CN/docs/Web/Guide/CSS/Block_formatting_context</a></li>
+<li> [布局概念] 关于CSS-BFC深入理解 <a target="_blank" rel="noopener" href="https://juejin.im/post/5909db2fda2f60005d2093db">https://juejin.im/post/5909db2fda2f60005d2093db</a></li>
 </ol>
 </div><div><ul class="post-copyright"><li class="post-copyright-author"><strong>本文作者：</strong>ss</li><li class="post-copyright-link"><strong>本文链接：</strong><a href="/2019/06/08/css-bfc/">https://dowob.cn/2019/06/08/css-bfc/</a></li><li class="post-copyright-license"><strong>版权声明：</strong>本站所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/cn/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0 CN</a> 许可协议。转载请注明出处！</li></ul></div><br><div class="tags"></div><div class="post-nav"><a class="pre" href="../../13/javascript%E7%BC%96%E7%A8%8B%E9%A2%98/">Javascript编程题</a><a class="next" href="../../05/element-ui-button-border-layout-container-link/">element-ui button layout container input</a></div><div id="comments"><div id="disqus_thread"><div class="btn_click_load"><button class="disqus_click_btn">阅读评论（请确保 Disqus 可以正常加载）</button></div><script type="text/javascript">var disqus_config = function () {
     this.page.url = 'https://dowob.cn/2019/06/08/css-bfc/';

@@ -6,16 +6,17 @@ ga('create','UA-134074056-1','auto');ga('send','pageview');</script><meta name="
 <p>因为《算法》里的程序依赖库algs4，作者提供了jar包和源码，但我想试试maven来管理项目</p>
 </blockquote>
 <h2 id="生成jar包"><a href="#生成jar包" class="headerlink" title="生成jar包"></a>生成jar包</h2><ol>
-<li>首先clone仓库<a href="https://github.com/kevin-wayne/algs4" target="_blank" rel="noopener">algs</a></li>
-<li>然后<code>mvn compile</code>，在target目录里找到<code>algs4-1.0.0.0.jar</code>，复制到自己的项目中，比如我的是复制到<code>/lib</code>中</li>
-<li><p>添加jar包，运行</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mvn install:install-file -Dfile=lib/algs4-1.0.0.0.jar -DgroupId=edu.princeton.cs -DartifactId=algs4 -Dversion=1.0.0 -Dpackaging=jar</span><br></pre></td></tr></table></figure>
+<li><p>首先clone仓库<a target="_blank" rel="noopener" href="https://github.com/kevin-wayne/algs4">algs</a></p>
 </li>
+<li><p>然后<code>mvn compile</code>，在target目录里找到<code>algs4-1.0.0.0.jar</code>，复制到自己的项目中，比如我的是复制到<code>/lib</code>中</p>
+</li>
+<li><p>添加jar包，运行</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mvn install:install-file -Dfile=lib/algs4-1.0.0.0.jar -DgroupId=edu.princeton.cs -DartifactId=algs4 -Dversion=1.0.0 -Dpackaging=jar</span><br></pre></td></tr></table></figure></li>
 <li><p>最后在项目<code>pom.xml</code>中添加</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>edu.princeton.cs<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>algs4<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.0.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>这样就能<code>import edu.princeton.cs.algs4.StdIn;</code>这样使用书中提供的标准库<br>项目目录结构如下<br><img src="/images/algs4.png" alt="目录结构"></p>
 </li>
 </ol>
-<p>这样就能<code>import edu.princeton.cs.algs4.StdIn;</code>这样使用书中提供的标准库<br>项目目录结构如下<br><img src="/images/algs4.png" alt="目录结构"></p>
 </div><div><ul class="post-copyright"><li class="post-copyright-author"><strong>本文作者：</strong>ss</li><li class="post-copyright-link"><strong>本文链接：</strong><a href="/2019/02/12/algorithms-4-maven/">https://dowob.cn/2019/02/12/algorithms-4-maven/</a></li><li class="post-copyright-license"><strong>版权声明：</strong>本站所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/cn/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0 CN</a> 许可协议。转载请注明出处！</li></ul></div><br><div class="tags"><a href="../../../../tags/%E5%8C%85%E7%AE%A1%E7%90%86/">包管理</a></div><div class="post-nav"><a class="pre" href="../../14/leetcode-215-Kth-Largest-Element-in-an-Array/">leetcode 215. Kth Largest Element in an Array</a><a class="next" href="../../11/leetcode-207-Course-Schedule/">leetcode 207. Course Schedule</a></div><div id="comments"><div id="disqus_thread"><div class="btn_click_load"><button class="disqus_click_btn">阅读评论（请确保 Disqus 可以正常加载）</button></div><script type="text/javascript">var disqus_config = function () {
     this.page.url = 'https://dowob.cn/2019/02/12/algorithms-4-maven/';
     this.page.identifier = '2019/02/12/algorithms-4-maven/';

@@ -44,15 +44,16 @@ ga('create','UA-134074056-1','auto');ga('send','pageview');</script><meta name="
 <ul>
 <li><p>简化了单个指令，例如下面代码将被压缩</p>
 <p>  and_i32 t0，t0，$ 0xffffffff</p>
-<p>在基本块级别进行存活分析。 该信息用于禁止从死变量移动到另一个变量。 它还用于删除计算无效结果的指令。 后者对于QEMU中的条件代码优化特别有用。</p>
-<p> 在以下示例中：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">add_i32 t0，t1，t2</span><br><span class="line">add_i32 t0，t0，$ <span class="number">1</span></span><br><span class="line">mov_i32 t0，$ <span class="number">1</span></span><br></pre></td></tr></table></figure>
-<p> 仅保留最后一条指令。</p>
 </li>
 </ul>
+<p> 在基本块级别进行存活分析。 该信息用于禁止从死变量移动到另一个变量。 它还用于删除计算无效结果的指令。 后者对于QEMU中的条件代码优化特别有用。</p>
+<p>   在以下示例中：</p>
+ <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">add_i32 t0，t1，t2</span><br><span class="line">add_i32 t0，t0，$ <span class="number">1</span></span><br><span class="line">mov_i32 t0，$ <span class="number">1</span></span><br></pre></td></tr></table></figure>
+
+<p>   仅保留最后一条指令。</p>
 <h2 id="3-4-指令参考"><a href="#3-4-指令参考" class="headerlink" title="3.4 指令参考"></a>3.4 指令参考</h2><h3 id="3-4-1-函数调用"><a href="#3-4-1-函数调用" class="headerlink" title="3.4.1 函数调用"></a>3.4.1 <strong>函数调用</strong></h3><p><code>call &lt;ret&gt; &lt;params&gt; ptr</code></p>
 <p>调用函数 ‘ptr’ (指针类型)</p>
-<p><code>&lt;ret&gt;</code>可选地 32 bit or 64 bit 返回值<br><code>&lt;params&gt;</code>可选地 32 bit or 64 bit 参数</p>
+<p><code>&lt;ret&gt; </code>可选地 32 bit or 64 bit 返回值<br><code>&lt;params&gt; </code>可选地 32 bit or 64 bit 参数</p>
 <h3 id="3-4-2-Jumps-Labels"><a href="#3-4-2-Jumps-Labels" class="headerlink" title="3.4.2 Jumps/Labels"></a>3.4.2 Jumps/Labels</h3><p><code>set_label $label</code></p>
 <p>在当前程序点定义标签’label’</p>
 <p><code>br $label</code></p>
@@ -60,7 +61,10 @@ ga('create','UA-134074056-1','auto');ga('send','pageview');</script><meta name="
 <p><code>brcond_i32/i64 t0, t1, cond, label</code></p>
 <p>当t0与t1的条件运算cond的结果为true时跳转到label</p>
 <p>条件运算cond可以是:</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">TCG_COND_EQ</span><br><span class="line">TCG_COND_NE</span><br><span class="line">TCG_COND_LT <span class="comment">/* signed */</span></span><br><span class="line">TCG_COND_GE <span class="comment">/* signed */</span></span><br><span class="line">TCG_COND_LE <span class="comment">/* signed */</span></span><br><span class="line">TCG_COND_GT <span class="comment">/* signed */</span></span><br><span class="line">TCG_COND_LTU <span class="comment">/* unsigned */</span></span><br><span class="line">TCG_COND_GEU <span class="comment">/* unsigned */</span></span><br><span class="line">TCG_COND_LEU <span class="comment">/* unsigned */</span></span><br><span class="line">TCG_COND_GTU <span class="comment">/* unsigned */</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">TCG_COND_EQ</span><br><span class="line">TCG_COND_NE</span><br><span class="line">TCG_COND_LT <span class="comment">/* signed */</span></span><br><span class="line">TCG_COND_GE <span class="comment">/* signed */</span></span><br><span class="line">TCG_COND_LE <span class="comment">/* signed */</span></span><br><span class="line">TCG_COND_GT <span class="comment">/* signed */</span></span><br><span class="line">TCG_COND_LTU <span class="comment">/* unsigned */</span></span><br><span class="line">TCG_COND_GEU <span class="comment">/* unsigned */</span></span><br><span class="line">TCG_COND_LEU <span class="comment">/* unsigned */</span></span><br><span class="line">TCG_COND_GTU <span class="comment">/* unsigned */</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
 <h3 id="3-4-3-数学运算"><a href="#3-4-3-数学运算" class="headerlink" title="3.4.3 数学运算"></a>3.4.3 数学运算</h3><p><code>add_i32/i64 t0, t1, t2</code></p>
 <p>t0=t1+t2</p>
 <p><code>sub_i32/i64 t0, t1, t2</code></p>
@@ -88,7 +92,7 @@ ga('create','UA-134074056-1','auto');ga('send','pageview');</script><meta name="
 <p><code>andc_i32/i64 t0, t1, t2</code></p>
 <p>t0=t1&amp;~t2</p>
 <p><code>eqv_i32/i64 t0, t1, t2</code></p>
-<p>t0=~(t1^t2), or equivalently, t0=t1^~t2</p>
+<p>t0=<del>(t1^t2), or equivalently, t0=t1^</del>t2</p>
 <p><code>nand_i32/i64 t0, t1, t2</code></p>
 <p>t0=~(t1&amp;t2)</p>
 <p><code>nor_i32/i64 t0, t1, t2</code></p>
@@ -113,6 +117,7 @@ ga('create','UA-134074056-1','auto');ga('send','pageview');</script><meta name="
 <p>t0 = t1</p>
 <p>t1移动到t0 (两个操作符类型必须相同).</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">ext8s_i32/i64 t0, t1</span><br><span class="line">ext8u_i32/i64 t0, t1</span><br><span class="line">ext16s_i32/i64 t0, t1</span><br><span class="line">ext16u_i32/i64 t0, t1</span><br><span class="line">ext32s_i64 t0, t1</span><br><span class="line">ext32u_i64 t0, t1</span><br></pre></td></tr></table></figure>
+
 <p>8, 16 or 32 bit sign/zero 扩展 (both operands must have the same type)</p>
 <p><code>bswap16_i32/i64 t0, t1</code></p>
 <p>16 bit byte swap on a 32/64 bit value. It assumes that the two/six high order<br>bytes are set to zero.</p>
@@ -126,9 +131,10 @@ ga('create','UA-134074056-1','auto');ga('send','pageview');</script><meta name="
 <p>将T2作为位域存入T1，并将结果放入DEST。 位字段由POS / LEN描述，它们是立即值：</p>
 <p>  LEN - 位域长度<br>  POS - 从LSB开始计算的第一位的位置</p>
 <p>例如, <code>deposit_i32 dest, t1, t2, 8, 4</code> 表示 从bit8开始的4-bit位域.  此操作等效于</p>
-<p> <code>dest = (t1 &amp; ~0x0f00) | ((t2 &lt;&lt; 8) &amp; 0x0f00)</code></p>
+<p> <code> dest = (t1 &amp; ~0x0f00) | ((t2 &lt;&lt; 8) &amp; 0x0f00)</code></p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">extract_i32/i64 dest, t1, pos, len</span><br><span class="line">sextract_i32/i64 dest, t1, pos, len</span><br></pre></td></tr></table></figure>
-<p>从T1中提取一个位域，并将结果放入DEST。 位字段由POS / LEN描述，它们是即时值，如上用于存款。 对于extract_ <em>，结果将用零扩展到左侧；否则，结果将扩展为0。 对于sextract_ </em>，结果将扩展到左侧，并带有pos + len-1的位域符号位的副本。</p>
+
+<p>从T1中提取一个位域，并将结果放入DEST。 位字段由POS / LEN描述，它们是即时值，如上用于存款。 对于extract_ *，结果将用零扩展到左侧；否则，结果将扩展为0。 对于sextract_ *，结果将扩展到左侧，并带有pos + len-1的位域符号位的副本。</p>
 <p>例如”sextract_i32 dest, t1, 8, 4” 表示从bit8开始的一段4-bit位域. 操作等效于</p>
 <p><code>dest = (t1 &lt;&lt; 20) &gt;&gt; 28</code>.</p>
 <p><code>extract2_i32/i64 dest, t1, t2, pos</code></p>
@@ -149,17 +155,21 @@ ga('create','UA-134074056-1','auto');ga('send','pageview');</script><meta name="
 <p><code>concat_i32_i64 t0, t1, t2</code><br>构造t0（64位），取t1（32位）的低半部分和t2（32位）的高半部分。</p>
 <p><code>concat32_i64 t0, t1, t2</code><br>构造t0（64位），取t1（64位）的低半部分和t2（64位）的高半部分。</p>
 <h3 id="3-4-9-加载-存放"><a href="#3-4-9-加载-存放" class="headerlink" title="3.4.9 加载/存放"></a>3.4.9 加载/存放</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">ld_i32/i64 t0, t1, offset</span><br><span class="line">ld8s_i32/i64 t0, t1, offset</span><br><span class="line">ld8u_i32/i64 t0, t1, offset</span><br><span class="line">ld16s_i32/i64 t0, t1, offset</span><br><span class="line">ld16u_i32/i64 t0, t1, offset</span><br><span class="line">ld32s_i64 t0, t1, offset</span><br><span class="line">ld32u_i64 t0, t1, offset</span><br></pre></td></tr></table></figure>
+
 <p>t0 = read(t1 + offset)<br>从宿主机器内存加载8位，16位，32位或64位带或不带符号扩展名。 偏移量必须为常数。</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">st_i32/i64 t0, t1, offset</span><br><span class="line">st8_i32/i64 t0, t1, offset</span><br><span class="line">st16_i32/i64 t0, t1, offset</span><br><span class="line">st32_i64 t0, t1, offset</span><br></pre></td></tr></table></figure>
+
 <p>write(t0, t1 + offset)<br>将8、16、32或64位写入宿主机器内存。</p>
 <p>所有这些操作码均假定指向的主机内存与全局内存不对应。 在后一种情况下，行为是不可预测的。</p>
 <h3 id="3-4-10-多字（multiword）算术"><a href="#3-4-10-多字（multiword）算术" class="headerlink" title="3.4.10 多字（multiword）算术"></a>3.4.10 多字（multiword）算术</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">add2_i32/i64 t0_low, t0_high, t1_low, t1_high, t2_low, t2_high</span><br><span class="line">sub2_i32/i64 t0_low, t0_high, t1_low, t1_high, t2_low, t2_high</span><br></pre></td></tr></table></figure>
+
 <p>与add / sub相似，不同之处在于双字输入T1和T2由两个单字参数组成，并且双字输出T0在两个单字输出中返回。</p>
 <p><code>mulu2_i32/i64 t0_low, t0_high, t1, t2</code></p>
 <p>与mul相似，除了两个无符号输入T1和T2产生完整的双字乘积T0。 后者以两个单字输出返回。</p>
 <p><code>muls2_i32/i64 t0_low, t0_high, t1, t2</code></p>
 <p>与mulu2相似，除了两个输入T1和T2是带符号的。</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mulsh_i32/i64 t0, t1, t2</span><br><span class="line">muluh_i32/i64 t0, t1, t2</span><br></pre></td></tr></table></figure>
+
 <p>分别提供有符号或无符号乘法的高部分。 如果后端未提供mulu2 / muls2，则tcg-op生成器可以获得相同的结果，方法是发出一对操作码mul + muluh / mulsh。</p>
 <h3 id="3-4-11-内存屏障"><a href="#3-4-11-内存屏障" class="headerlink" title="3.4.11 内存屏障"></a>3.4.11 内存屏障</h3><p><code>mb &lt;$ arg&gt;</code></p>
 <p>生成target内存屏障指令，以确保由相应的Host内存屏障指令强制执行的内存排序。 后端执行的排序可能比guest要求的排序严格。 它不能更弱。 该操作码采用一个常量参数，该参数是生成适当的屏障指令所必需的。 后端应注意仅在必要时（即，对于SMP来宾和启用MTTCG时）发出目标屏障指令。</p>
@@ -186,6 +196,7 @@ ga('create','UA-134074056-1','auto');ga('send','pageview');</script><meta name="
 <h3 id="宿主机器向量操作"><a href="#宿主机器向量操作" class="headerlink" title="宿主机器向量操作"></a>宿主机器向量操作</h3><p>所有向量操作都有两个参数：<code>TCGOP_VECL</code>和<code>TCGOP_VECE</code>。前者以log2 64位为单位指定向量的长度。后者以log2 8位为单位指定元素的长度（如果适用）。</p>
 <p>例如： <code>VECL = 1-&gt; 64 &lt;&lt; 1-&gt; v128</code>，而<code>VECE = 2-&gt; 1 &lt;&lt; 2-&gt; i32</code>。</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mov_vec v0，v1</span><br><span class="line">ld_vec v0，t1</span><br><span class="line">st_vec v0，t1</span><br></pre></td></tr></table></figure>
+
 <p>移动，加载和存储。</p>
 <p><code>dup_vec v0，r1</code></p>
 <p>通过V0将R1的低N位复制到VECL / VECE副本中。</p>
@@ -210,18 +221,23 @@ ga('create','UA-134074056-1','auto');ga('send','pageview');</script><meta name="
 <p><code>umax_vec：</code></p>
 <p>同样，对于有符号和无符号元素类型，v0 = MAX（v1，v2）。</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ssadd_vec：</span><br><span class="line">sssub_vec：</span><br><span class="line">usadd_vec：</span><br><span class="line">ussub_vec：</span><br></pre></td></tr></table></figure>
+
 <p>有符号和无符号饱和加法和减法。如果在元素类型内无法表示真实结果，则将元素设置为该类型的最小值或最大值。</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">and_vec v0，v1，v2</span><br><span class="line">or_vec v0，v1，v2</span><br><span class="line">xor_vec v0，v1，v2</span><br><span class="line">andc_vec v0，v1，v2</span><br><span class="line">orc_vec v0，v1，v2</span><br><span class="line">not_vec v0，v1</span><br></pre></td></tr></table></figure>
+
 <p>同样，有和没有补码的逻辑运算。请注意，VECE未使用。</p>
 <p><code>shli_vec v0，v1，i2</code></p>
 <p><code>shls_vec v0，v1，s2</code></p>
 <p>将所有元素从v1移至标量i2 / s2。即</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span>(i = <span class="number">0</span>; i &lt;VECL / VECE; ++ i)</span><br><span class="line">&#123;</span><br><span class="line">    v0 [i] = v1 [i] &lt;&lt; s2;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">shri_vec v0，v1，i2</span><br><span class="line">sari_vec v0，v1，i2</span><br><span class="line">shrs_vec v0，v1，s2</span><br><span class="line">sars_vec v0，v1，s2</span><br></pre></td></tr></table></figure>
+
 <p>对于逻辑和算术右移也是如此。</p>
 <p><code>shlv_vec v0，v1，v2</code></p>
 <p>将元素从v1移到v2。即</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span>(i = <span class="number">0</span>; i &lt;VECL / VECE; ++ i)</span><br><span class="line">&#123;</span><br><span class="line">    v0 [i] = v1 [i] &lt;&lt; s2;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p><code>shrv_vec v0，v1，v2</code></p>
 <p><code>sarv_vec v0，v1，v2</code></p>
 <p>对于逻辑和算术右移也是如此。</p>
@@ -232,6 +248,7 @@ ga('create','UA-134074056-1','auto');ga('send','pageview');</script><meta name="
 <p><code>cmpsel_vec v0，c1，c2，v3，v4，cond</code></p>
 <p>根据比较结果选择元素：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span>(i = <span class="number">0</span>; i &lt;n; ++ i)&#123;</span><br><span class="line">  v0 [i] =（c1 [i] cond c2 [i]）？ v3 [i]：v4 [i]。</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p><strong>注意1：</strong>当已知最后一个操作数为常量时，会定义一些快捷方式（例如，addi用于add，movi用于mov）。</p>
 <p><strong>注意2：</strong>使用TCG时，绝不能直接生成操作码，因为其中某些操作码可能无法用作“实际”操作码。 始终使用函数tcg_gen_xxx（args）。</p>
 <h1 id="4-后端"><a href="#4-后端" class="headerlink" title="4. 后端"></a>4. 后端</h1><p>tcg-target.h包含目标特定的定义。 tcg-target.inc.c包含目标特定代码； 它由tcg / tcg.c包含，而不是独立的C文件。</p>

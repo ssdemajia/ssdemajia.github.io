@@ -2,19 +2,22 @@
 (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
 m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
 })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-ga('create','UA-134074056-1','auto');ga('send','pageview');</script><meta name="generator" content="Hexo 5.4.0"></head><body><div class="body_container"><div id="header"><div class="site-name"><a id="logo" href="../../../../.">dOwOb</a><p class="description"></p></div><div id="nav-menu"><a class="current" href="../../../../."><i class="fa undefined"> 首页</i></a><a href="../../../../archives/"><i class="fa undefined"> 归档</i></a><a href="../../../../about/"><i class="fa undefined"> 关于</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-4"><div class="content_container"><div class="post"><h1 class="post-title">翻译 afl白皮书</h1><div class="post-meta">Feb 13, 2020<script src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script><span id="busuanzi_container_page_pv"> | <span id="busuanzi_value_page_pv"></span><span> 阅读</span></span><span class="post-time"><span class="post-meta-item-text"> | </span><span class="post-meta-item-icon"><i class="fa fa-keyboard-o"></i><span class="post-count"> 6.1k</span><span class="post-meta-item-text"> 字</span></span></span><span class="post-time"> | <span class="post-meta-item-icon"><i class="fa fa-hourglass-half"></i><span class="post-count"> 22</span><span class="post-meta-item-text"> 分钟</span></span></span></div><div class="post-content"><p>白皮书地址<a href="http://lcamtuf.coredump.cx/afl/technical_details.txt" target="_blank" rel="noopener">http://lcamtuf.coredump.cx/afl/technical_details.txt</a></p>
-<p>afl设计目标和动机的讨论地址<a href="http://lcamtuf.coredump.cx/afl/historical_notes.txt" target="_blank" rel="noopener">http://lcamtuf.coredump.cx/afl/historical_notes.txt</a></p>
+ga('create','UA-134074056-1','auto');ga('send','pageview');</script><meta name="generator" content="Hexo 5.4.0"></head><body><div class="body_container"><div id="header"><div class="site-name"><a id="logo" href="../../../../.">dOwOb</a><p class="description"></p></div><div id="nav-menu"><a class="current" href="../../../../."><i class="fa undefined"> 首页</i></a><a href="../../../../archives/"><i class="fa undefined"> 归档</i></a><a href="../../../../about/"><i class="fa undefined"> 关于</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-4"><div class="content_container"><div class="post"><h1 class="post-title">翻译 afl白皮书</h1><div class="post-meta">Feb 13, 2020<script src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script><span id="busuanzi_container_page_pv"> | <span id="busuanzi_value_page_pv"></span><span> 阅读</span></span><span class="post-time"><span class="post-meta-item-text"> | </span><span class="post-meta-item-icon"><i class="fa fa-keyboard-o"></i><span class="post-count"> 6.1k</span><span class="post-meta-item-text"> 字</span></span></span><span class="post-time"> | <span class="post-meta-item-icon"><i class="fa fa-hourglass-half"></i><span class="post-count"> 22</span><span class="post-meta-item-text"> 分钟</span></span></span></div><div class="post-content"><p>白皮书地址<a target="_blank" rel="noopener" href="http://lcamtuf.coredump.cx/afl/technical_details.txt">http://lcamtuf.coredump.cx/afl/technical_details.txt</a></p>
+<p>afl设计目标和动机的讨论地址<a target="_blank" rel="noopener" href="http://lcamtuf.coredump.cx/afl/historical_notes.txt">http://lcamtuf.coredump.cx/afl/historical_notes.txt</a></p>
 <h2 id="0-设计说明"><a href="#0-设计说明" class="headerlink" title="0.设计说明"></a>0.设计说明</h2><p>AFL没有专注于奇特的操作原理和特定理论的POC，而是做到最好。AFL可以被认为是一些Hacks技巧的集合，这些技巧在实际应用中被测试，发现非常有效，同时这些技巧以我当时想到的最简单、强健的方式实现。</p>
 <p>得益于轻量级指令的使用，使得许多由此产生的功能成为可能，但是这种机制仅被认为一种手段。唯一真正的控制原则是速度、可靠性、易用性。</p>
 <h2 id="1-覆盖率测量"><a href="#1-覆盖率测量" class="headerlink" title="1.覆盖率测量"></a>1.覆盖率测量</h2><p>指令被注入已经编译好的程序来捕获分支覆盖率，用于粗略统计分支命中次数。被注入分支处的代码本质上等于：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">cur_location = &lt;COMPILE_TIME_RANDOM&gt;;</span><br><span class="line">shared_mem[cur_location ^ prev_location]++; </span><br><span class="line">prev_location = cur_location &gt;&gt; <span class="number">1</span>;</span><br></pre></td></tr></table></figure>
+
 <p>为了简化链接复杂项目，<code>cur_location</code>的值被随机生成，并且使用XOR来保持输出均匀分布。</p>
 <p><code>shared_mem[]</code>数组是一个64KB大小共享内存区域，由调用者传递到测试程序中。在输出映射(map)的每个字节集合可以认为命中了被检测代码的一个特殊元组(<code>branch_src</code>, <code>branch_dst</code>)。</p>
 <p>通过选择映射内存(<code>map</code>)的大小，使大多数目标的分支冲突是零散的，这些目标代码的分支数大多在2000到10000之间。</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"> Branch cnt | Colliding tuples | Example targets</span><br><span class="line">------------+------------------+-----------------</span><br><span class="line">      <span class="number">1</span>,<span class="number">000</span> | <span class="number">0.75</span>%            | giflib, lzo</span><br><span class="line">      <span class="number">2</span>,<span class="number">000</span> | <span class="number">1.5</span>%             | zlib, tar, xz</span><br><span class="line">      <span class="number">5</span>,<span class="number">000</span> | <span class="number">3.5</span>%             | libpng, libwebp</span><br><span class="line">     <span class="number">10</span>,<span class="number">000</span> | <span class="number">7</span>%               | libxml</span><br><span class="line">     <span class="number">20</span>,<span class="number">000</span> | <span class="number">14</span>%              | sqlite</span><br><span class="line">     <span class="number">50</span>,<span class="number">000</span> | <span class="number">30</span>%              | -</span><br></pre></td></tr></table></figure>
+
 <p>同时，<code>shared_mem[]</code>数组的大小足够小，使接收段程序在毫秒内分析，同时毫不费力的适应L2缓存。</p>
 <p>这种形式的覆盖相对于简单的块覆盖对程序执行路径提供更深入的理解。特别的，它对以下执行路径进行区分：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">A -&gt; B -&gt; C -&gt; D -&gt; E (tuples: AB, BC, CD, DE)</span><br><span class="line">A -&gt; B -&gt; D -&gt; C -&gt; E (tuples: AB, BD, DC, CE)</span><br></pre></td></tr></table></figure>
+
 <p>这有助于发现底层代码中细微的错误条件，因为安全漏洞常常与意料外、不正确的状态转换有关，而不仅仅是到达一个新的基本代码块。</p>
 <p>在伪代码最后一行的移位操作主要用于保留分支元组的方向性（如果没有位移操作，<code>A^B</code>等于<code>B^A</code>），同时保留紧凑循环中的标识（否则，<code>A^A</code>将会等于<code>B^B</code>）。</p>
 <p>在Intel cpu上确实简单的饱和（saturating）运算符，因此命中计数会出现累计后回到0的情况。这中情况不大会出现在局部事件，因此视为可以为了性能的权衡。</p>
@@ -23,27 +26,32 @@ ga('create','UA-134074056-1','auto');ga('send','pageview');</script><meta name="
 <p>这种方法允许对程序状态进行非常细粒度和长期的研究，而不必对复杂的执行跟踪执行任何计算密集型和脆弱的全局比较，同时避免了路径爆炸的灾难。</p>
 <p>为了展示算法的特性，思考下面两个路径追踪，因为存在新的元组(CA, AE)，所以是新的路径。</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#<span class="number">1</span>: A -&gt; B -&gt; C -&gt; D -&gt; E</span><br><span class="line">#<span class="number">2</span>: A -&gt; B -&gt; C -&gt; A -&gt; E</span><br></pre></td></tr></table></figure>
+
 <p>同时，第二条路径继续，后面的模式将不会被认为是唯一的，尽管有一个明显不同的整体执行路径。</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">#<span class="number">3</span>: A -&gt; B -&gt; C -&gt; A -&gt; B -&gt; C -&gt; A -&gt; B -&gt; C -&gt; D -&gt; E</span><br></pre></td></tr></table></figure>
+
 <p>除了检测新的元组外，模糊器同时考虑粗粒度元组命中数。这些被分割成几个桶：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span><span class="number">-7</span>, <span class="number">8</span><span class="number">-15</span>, <span class="number">16</span><span class="number">-31</span>, <span class="number">32</span><span class="number">-127</span>, <span class="number">128</span>+</span><br></pre></td></tr></table></figure>
+
 <p>在某种程度上，桶（bucket）数量是一个人工实现。它允许由指令生成8位计数器的原位映射，用于模糊器可执行程序对所依赖的8个位置位图来保持对已见的分支元组计数进行追踪。</p>
 <p>在单个桶范围内的变化会被忽略，而从一个桶到另一个桶的转移，会被认为是程序控制流的一个有趣转变，在下面部分中概述演化过程。</p>
 <p>命中统计的行为提供了一种区别潜在有趣的控制流变化的方式，比如一个代码块被执行了两次而通常命中了一次。同时，它对经验上不太明显的变化是很不敏感的，比如一个循环从第47次到第48次。对于密集追踪映射（dense trace maps)的元组冲突，计数器同样提供了一定程度“偶然”免疫力。</p>
 <p>通过内存和执行时间来严格控制执行。默认情况，超时时间被设置为初始校准时间的5倍，最大舍入为20ms。主动超时用于减低tarpit，提高1%覆盖率同时降低100倍速度，来防止模糊器性能急速下降。我们务实地拒绝这种情况，希望模糊器能够找到一种更便宜的方法来到达相同的代码。实际测试强烈表明，更充足的时间限制是不值得的。</p>
 <h2 id="3-输入队列的演变"><a href="#3-输入队列的演变" class="headerlink" title="3.输入队列的演变"></a>3.输入队列的演变</h2><p>在程序中产生新状态变化的变异测试用例将被添加到输入队列中，并用作以后几轮模糊测试的起点。它们作为补充，不会自动替换现有的发现。</p>
 <p>相对于更贪婪的遗传，此方法允许AFL逐步探索底层文件格式的各种不相交和可能互不兼容的特征，如下图展示的图片：</p>
-<p><img src="http://lcamtuf.coredump.cx/afl/afl_gzip.png" alt></p>
+<p><img src="http://lcamtuf.coredump.cx/afl/afl_gzip.png"></p>
 <p>下面网址讨论了该算法的许多实际用例：</p>
-<p><a href="http://lcamtuf.blogspot.com/2014/11/pulling-jpegs-out-of-thin-air.html" target="_blank" rel="noopener">http://lcamtuf.blogspot.com/2014/11/pulling-jpegs-out-of-thin-air.html</a></p>
-<p><a href="http://lcamtuf.blogspot.com/2014/11/afl-fuzz-nobody-expects-cdata-sections.html" target="_blank" rel="noopener">http://lcamtuf.blogspot.com/2014/11/afl-fuzz-nobody-expects-cdata-sections.html</a></p>
+<p><a target="_blank" rel="noopener" href="http://lcamtuf.blogspot.com/2014/11/pulling-jpegs-out-of-thin-air.html">http://lcamtuf.blogspot.com/2014/11/pulling-jpegs-out-of-thin-air.html</a></p>
+<p><a target="_blank" rel="noopener" href="http://lcamtuf.blogspot.com/2014/11/afl-fuzz-nobody-expects-cdata-sections.html">http://lcamtuf.blogspot.com/2014/11/afl-fuzz-nobody-expects-cdata-sections.html</a></p>
 <p>通过此过程生成的合成预料库实质上是“嗯，这做了些新事情”的紧凑文件集合，可以为其他测试过程提供种子（比如，手动对资源密集型桌面程序进行压力测试）。</p>
 <p>通过这种方法，大多数目标队列会增加1000到10000个条目；大约10-30%归因于新元组的发现，剩下的是命中次数相关。</p>
 <p>下表比较了使用几种不同的引导模糊测试方法时发现文件语法和浏览程序状态的相对能力。 检测到的目标是使用-O3编译并带有虚拟文本文件的GNU补丁2.7.3。 该会话由带有afl-fuzz的输入队列中的一次传递组成：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">  Fuzzer guidance | Blocks  | Edges   | Edge hit | Highest-coverage</span><br><span class="line">    strategy used | reached | reached | cnt var  | test <span class="keyword">case</span> generated</span><br><span class="line">------------------+---------+---------+----------+---------------------------</span><br><span class="line">   (Initial file) | <span class="number">156</span>     | <span class="number">163</span>     | <span class="number">1.00</span>     | (none)</span><br><span class="line">                  |         |         |          |</span><br><span class="line">  Blind fuzzing S | <span class="number">182</span>     | <span class="number">205</span>     | <span class="number">2.23</span>     | First <span class="number">2</span> B of RCS diff</span><br><span class="line">  Blind fuzzing L | <span class="number">228</span>     | <span class="number">265</span>     | <span class="number">2.23</span>     | First <span class="number">4</span> B of -c mode diff</span><br><span class="line">   Block coverage | <span class="number">855</span>     | <span class="number">1</span>,<span class="number">130</span>   | <span class="number">1.57</span>     | Almost-valid RCS diff</span><br><span class="line">    Edge coverage | <span class="number">1</span>,<span class="number">452</span>   | <span class="number">2</span>,<span class="number">070</span>   | <span class="number">2.18</span>     | One-chunk -c mode diff</span><br><span class="line">        AFL model | <span class="number">1</span>,<span class="number">765</span>   | <span class="number">2</span>,<span class="number">597</span>   | <span class="number">4.99</span>     | Four-chunk -c mode diff</span><br></pre></td></tr></table></figure>
+
 <p>第一个条目blind fuzzing（“S”)表示测试执行一轮。第二组L表示模糊器使用循环方式运行多个执行周期，与指令执行周期相关，这需要更多的时间才能完全处理增长的队列。</p>
 <p>在一个单独的实验中获得了大致相似的结果，在该实验中，对模糊器进行了修改，以编译出所有随机的模糊阶段，只剩下一系列基本的顺序操作，例如步行翻转。 由于此模式无法更改输入文件的大小，因此为会话填充了有效的统一差异：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">  Queue extension | Blocks  | Edges   | Edge hit | Number of unique</span><br><span class="line">    strategy used | reached | reached | cnt var  | crashes found</span><br><span class="line">------------------+---------+---------+----------+------------------</span><br><span class="line">   (Initial file) | <span class="number">624</span>     | <span class="number">717</span>     | <span class="number">1.00</span>     | -</span><br><span class="line">                  |         |         |          |</span><br><span class="line">    Blind fuzzing | <span class="number">1</span>,<span class="number">101</span>   | <span class="number">1</span>,<span class="number">409</span>   | <span class="number">1.60</span>     | <span class="number">0</span></span><br><span class="line">   Block coverage | <span class="number">1</span>,<span class="number">255</span>   | <span class="number">1</span>,<span class="number">649</span>   | <span class="number">1.48</span>     | <span class="number">0</span></span><br><span class="line">    Edge coverage | <span class="number">1</span>,<span class="number">259</span>   | <span class="number">1</span>,<span class="number">734</span>   | <span class="number">1.72</span>     | <span class="number">0</span></span><br><span class="line">        AFL model | <span class="number">1</span>,<span class="number">452</span>   | <span class="number">2</span>,<span class="number">040</span>   | <span class="number">3.16</span>     | <span class="number">1</span></span><br></pre></td></tr></table></figure>
+
 <p>如前所述，以前有关遗传模糊测试的一些工作依赖于维护单个测试用例并对其进行改进以最大化覆盖范围。 至少在上述测试中，这种“贪婪”方法似乎没有给盲目模糊策略带来实质性好处。</p>
 <h2 id="4-语料剔除"><a href="#4-语料剔除" class="headerlink" title="4.语料剔除"></a>4.语料剔除</h2><p>上述渐进的状态探索方法意味着程序中稍后合成的一些测试用例可能具有边缘覆盖（edge coverage）范围，这是其祖先提供的覆盖范围的严格超集。</p>
 <p>为了优化模糊测试的工作量，AFL使用快速算法定期重新评估队列，该算法选择较小的测试用例子集，该用例仍然覆盖到目前为止所看到的每个元组，并且其特性特别适合该工具。</p>
@@ -79,7 +87,7 @@ ga('create','UA-134074056-1','auto');ga('send','pageview');</script><meta name="
 </ol>
 <p>afl-tmin使用ASCII数字’0’代替使用数字0x00清零。这样的修改不太可能干扰文本解析，所以更有可能成功最小化文本文件。</p>
 <p>与其他学术论文中提出的测试用例最小化方法相比，afl-tmin更加简单（less involved)，需要的执行量少得多，并且在大多数实际应用中往往产出更多可比的结果。</p>
-<h2 id="6-模糊测试策略"><a href="#6-模糊测试策略" class="headerlink" title="6.模糊测试策略"></a>6.模糊测试策略</h2><p>指令（instrumentation）提供的反馈使其轻松了解各种模糊策略的价值，并且优化策略参数，从而使它们能够在各种文件类型中均能很好地工作。afl-fuzz所使用的策略与文件格式无关，更多细节在：<a href="http://lcamtuf.blogspot.com/2014/08/binary-fuzzing-strategies-what-works.html" target="_blank" rel="noopener">http://lcamtuf.blogspot.com/2014/08/binary-fuzzing-strategies-what-works.html</a></p>
+<h2 id="6-模糊测试策略"><a href="#6-模糊测试策略" class="headerlink" title="6.模糊测试策略"></a>6.模糊测试策略</h2><p>指令（instrumentation）提供的反馈使其轻松了解各种模糊策略的价值，并且优化策略参数，从而使它们能够在各种文件类型中均能很好地工作。afl-fuzz所使用的策略与文件格式无关，更多细节在：<a target="_blank" rel="noopener" href="http://lcamtuf.blogspot.com/2014/08/binary-fuzzing-strategies-what-works.html">http://lcamtuf.blogspot.com/2014/08/binary-fuzzing-strategies-what-works.html</a></p>
 <p>值得注意的是在早期，afl-fuzz所做大部分工作实际上都是确定性的，在后期才逐渐增加随机栈修改和测试用例拼接。确定性策略包括：</p>
 <ul>
 <li>使用不同长度、步进来顺序位翻转（bit flips）。</li>
@@ -93,7 +101,7 @@ ga('create','UA-134074056-1','auto');ga('send','pageview');</script><meta name="
 <p>也就是说，此规则有一个（不重要的）例外：当队列中条目经历了确定性步骤的初始集合时，观察到文件中某些区域的调整对执行路径的校验和无影响，它们可能会被排除在确定性模糊测试之外，模糊测试可能会直接进行随机调整。特别是对于冗长的、人类可读的数据格式，这可以将程序的执行次数减少10-40%，而覆盖率却没有明显下降。在极端情况下，例如常见的块对齐tar归档，收益可能高达90%</p>
 <p>因为底层的“effector maps”在每个队列条目中都是本地的，并且仅在确定阶段有效，同时不会改变文件大小和总体布局，因此这个机制看起来非常可靠，且易于实现。</p>
 <h2 id="7-字典"><a href="#7-字典" class="headerlink" title="7.字典"></a>7.字典</h2><p>工具（instrumentation）提供的反馈使自动识别某些类型输入文件中语法标记、检测预定义、或自动检测词典术语的某些组合构成的有效语法变得容易。</p>
-<p>关于afl-fuzz中这些功能如何实现的讨论可以在下面的链接中查看：<a href="http://lcamtuf.blogspot.com/2015/01/afl-fuzz-making-up-grammar-with.html" target="_blank" rel="noopener">http://lcamtuf.blogspot.com/2015/01/afl-fuzz-making-up-grammar-with.html</a></p>
+<p>关于afl-fuzz中这些功能如何实现的讨论可以在下面的链接中查看：<a target="_blank" rel="noopener" href="http://lcamtuf.blogspot.com/2015/01/afl-fuzz-making-up-grammar-with.html">http://lcamtuf.blogspot.com/2015/01/afl-fuzz-making-up-grammar-with.html</a></p>
 <p>本质上，将容易获得的基础语法符号（token）以纯随机的方式组合一起，队列的发展和工具（instrumentation）一起提供了一种反馈机制，以区分无意义的变异和触发检测代码新行为的变异，并在此发现之上逐步构建更复杂的语法。</p>
 <p>词典已显示能够让模糊器快速的重建高度冗长和复杂的语言，比如javascript、sql、xml；上面提到的博客文章给出了几个生成SQL语句的示例。</p>
 <p>有趣的是afl工具还运行模糊器自动隔离输入文件中已经存在的语法标记。它通过查找字节的运行来实现，这些字节的运行在翻转时会对程序的执行路径产生持久的影响。这表示与代码中预定义值之间的原子比较。模糊器依靠这个信号来构建紧凑的”自动化词典“（auto dictionaties），然后与其他模糊策略结合使用。</p>
@@ -106,11 +114,11 @@ ga('create','UA-134074056-1','auto');ga('send','pageview');</script><meta name="
 <p>该方法很容易在早期受到某些路径计数膨胀的影响，但具有非常强的自我限制，类似afl-fuzz的执行路径分析逻辑。</p>
 <h2 id="9-崩溃调查"><a href="#9-崩溃调查" class="headerlink" title="9.崩溃调查"></a>9.崩溃调查</h2><p>许多类型的崩溃的可利用性可能是模棱两可的。 afl-fuzz尝试通过提供一种崩溃探索模式来解决此问题，在该模式下，以一种与模糊测试器的正常操作非常相似的方式对已知故障的测试用例进行模糊测试，但是存在一个约束条件，该约束条件会导致丢弃任何非崩溃的突变 。</p>
 <p>有关此方法的价值的详细讨论可以在这里找到：</p>
-<p>   <a href="http://lcamtuf.blogspot.com/2014/11/afl-fuzz-crash-exploration-mode.html" target="_blank" rel="noopener">http://lcamtuf.blogspot.com/2014/11/afl-fuzz-crash-exploration-mode.html</a></p>
+<p>   <a target="_blank" rel="noopener" href="http://lcamtuf.blogspot.com/2014/11/afl-fuzz-crash-exploration-mode.html">http://lcamtuf.blogspot.com/2014/11/afl-fuzz-crash-exploration-mode.html</a></p>
 <p>该方法使用工具的反馈来探索崩溃程序的状态，以克服模棱两可的故障条件，然后隔离新发现的输入以供人工检查。</p>
 <p>关于崩溃，值得注意的是，与普通队列条目相比，崩溃输入<strong>不</strong>修剪； 它们将完全按照发现的方式保存，以便更轻松地将它们与队列中的父级非崩溃条目进行比较。 也就是说，可以使用afl-tmin随意收缩它们。</p>
 <h2 id="10-Fork-server"><a href="#10-Fork-server" class="headerlink" title="10.Fork server"></a>10.Fork server</h2><p>为了提高性能，afl-fuzz使用了一个“ fork server”，其中经过模糊处理的进程仅通过<code>execve()</code>、链接和libc初始化进行一次，然后通过利用写时复制从停止的进程映像中进行克隆。此处更详细地描述了实现：</p>
-<p>  <a href="http://lcamtuf.blogspot.com/2014/10/fuzzing-binaries-without-execve.html" target="_blank" rel="noopener">http://lcamtuf.blogspot.com/2014/10/fuzzing-binaries-without-execve.html</a></p>
+<p>  <a target="_blank" rel="noopener" href="http://lcamtuf.blogspot.com/2014/10/fuzzing-binaries-without-execve.html">http://lcamtuf.blogspot.com/2014/10/fuzzing-binaries-without-execve.html</a></p>
 <p>fork server是注入的指令的一部分，并且仅在第一个指令工具处停止以等待来自afl-fuzz的命令。</p>
 <p>使用快速目标，fork server可以提供可观的性能提升，通常在1.5倍至2倍之间。也可以：</p>
 <ul>
@@ -124,7 +132,8 @@ ga('create','UA-134074056-1','auto');ga('send','pageview');</script><meta name="
 <p>有关此设计的更多信息，请参见parallel_fuzzing.txt。</p>
 <h2 id="12-二进制目标"><a href="#12-二进制目标" class="headerlink" title="12. 二进制目标"></a>12. 二进制目标</h2><p>在“用户态模拟”模式下，借助单独构建的QEMU版本，可以完成对黑箱，仅二进制目标的检测。这也允许执行跨体系结构的代码-例如x86上的ARM二进制文件。</p>
 <p>QEMU使用基本块作为翻译单位；该工具是在此基础上实现的，并使用与编译时钩子（compile-time hooks）大致类似的模型：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (block_address &gt; elf_text_start &amp;&amp; block_address &lt; elf_text_end) &#123;</span><br><span class="line"></span><br><span class="line">  cur_location = (block_address &gt;&gt; <span class="number">4</span>) ^ (block_address &lt;&lt; <span class="number">8</span>);</span><br><span class="line">  shared_mem[cur_location ^ prev_location]++; </span><br><span class="line">  prev_location = cur_location &gt;&gt; <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (block_address &gt; elf_text_start &amp;&amp; block_address &lt; elf_text_end) &#123;</span><br><span class="line"></span><br><span class="line">  cur_location = (block_address &gt;&gt; <span class="number">4</span>) ^ (block_address &lt;&lt; <span class="number">8</span>);</span><br><span class="line">  shared_mem[cur_location ^ prev_location]++; </span><br><span class="line">  prev_location = cur_location &gt;&gt; <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
 <p>第二行中基于移位和异或的加扰用于掩盖指令对齐的影响。</p>
 <p>诸如QEMU，DynamoRIO和PIN之类的二进制转换器的启动相当缓慢。为了解决此问题，QEMU模式利用了类似于用于编译器代码的fork服务器，有效地产生了已在<code>_start</code>暂停的已初始化进程的副本。</p>
 <p>首次转换新的基本块也会导致大量的延迟。为消除此问题，通过在正在运行的仿真器和父进程之间提供一个通道来扩展AFL fork server。该通道用于通知父对象任何新遇到的块的地址，并将其添加到将为将来的子进程复制的转换缓存中。</p>
@@ -136,7 +145,8 @@ ga('create','UA-134074056-1','auto');ga('send','pageview');</script><meta name="
 </li>
 <li><p>“表面内容”：部分（但不是全部）bitflips的片段</p>
 <pre><code>产生一些控制流变化。示例可以包括丰富文档（例如XML，RTF）中的字符串。
-</code></pre></li>
+</code></pre>
+</li>
 <li><p>“关键流”：字节序列，所有位翻转均以不同但相关的方式改变控制流。这可能是压缩数据，非原子比较关键字或魔术值等。</p>
 </li>
 <li><p>“可疑长度字段”：小的原子整数，以任何方式接触时，都会导致程序控制流发生一致的变化，提示长度检查失败。</p>

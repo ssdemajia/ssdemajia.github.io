@@ -239,7 +239,7 @@
     <updated>2021-05-25T02:25:41.402Z</updated>
     
     
-    <summary type="html">&lt;p&gt;听说ctf挺好玩，刚好最近在看汇编，上实验吧找到了这道题，上手这道题的时候一脸懵逼，只有一个whatamitoyou的文件，在macOS下发现无法运行，然后放到虚拟机ubuntu中运行，显示&lt;code&gt;segment fault&lt;/code&gt;&lt;br&gt;</summary>
+    <summary type="html">&lt;p&gt;听说ctf挺好玩，刚好最近在看汇编，上实验吧找到了这道题，上手这道题的时候一脸懵逼，只有一个whatamitoyou的文件，在macOS下发现无法运行，然后放到虚拟机ubuntu中运行，显示&lt;code&gt;segment fault&lt;/code&gt;&lt;/p&gt;</summary>
     
     
     
@@ -336,7 +336,7 @@
     
     
     <summary type="html">&lt;p&gt;实现的关键是两个覆盖全屏的div，第一个是用于展示对话框（dialog），第二个是modal用于将背景变暗(modal)。然后点击button后dialog这个div从display:none变为正常显示，当对话框展示出来后点击modal后将modal和dialog都隐藏。&lt;/p&gt;
-&lt;p&gt;对于覆盖全屏的div使用position:fixed来固定。通过设置z-index使它们在全局之上。&lt;br&gt;</summary>
+&lt;p&gt;对于覆盖全屏的div使用position:fixed来固定。通过设置z-index使它们在全局之上。&lt;/p&gt;</summary>
     
     
     
