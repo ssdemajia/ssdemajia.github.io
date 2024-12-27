@@ -1,0 +1,104 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title>shellcode编写 | SS</title><link rel="stylesheet" type="text/css" href="../../../../css/style.css?v=0.0.0"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/normalize/8.0.1/normalize.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/pure-min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/grids-responsive-min.css"><link rel="stylesheet" href="//lib.baomitu.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//lib.baomitu.com/jquery/3.3.1/jquery.min.js"></script><link rel="icon" mask="" sizes="any" href="../../../../favicon.ico"><link rel="Shortcut Icon" type="image/x-icon" href="../../../../favicon.ico"><link rel="apple-touch-icon" href="../../../../apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="../../../../apple-touch-icon.png"><link rel="alternate" type="application/atom+xml" href="../../../../atom.xml"><script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+ga('create','UA-134074056-1','auto');ga('send','pageview');</script><meta name="generator" content="Hexo 7.3.0"></head><body><div class="body_container"><div id="header"><div class="site-name"><a id="logo" href="../../../../.">SS</a><p class="description">不知道在说些什么</p></div><div id="nav-menu"><a class="current" href="../../../../."><i class="fa undefined"> 首页</i></a><a href="../../../../archives/"><i class="fa undefined"> 归档</i></a><a href="../../../../about/"><i class="fa undefined"> 关于</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-4"><div class="content_container"><div class="post"><h1 class="post-title">shellcode编写</h1><div class="post-meta">Jul 26, 2019<span> | </span><span class="category"><a href="../../../../categories/%F0%9F%94%92%E5%AE%89%E5%85%A8/">🔒安全</a></span><script src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script><span id="busuanzi_container_page_pv"> | <span id="busuanzi_value_page_pv"></span><span> 阅读</span></span><span class="post-time"><span class="post-meta-item-text"> | </span><span class="post-meta-item-icon"><i class="fa fa-keyboard-o"></i><span class="post-count"> 1.2k</span><span class="post-meta-item-text"> 字</span></span></span><span class="post-time"> | <span class="post-meta-item-icon"><i class="fa fa-hourglass-half"></i><span class="post-count"> 4</span><span class="post-meta-item-text"> 分钟</span></span></span></div><div class="post-content"><p>​		shellcode可以用于在栈溢出或者堆溢出的漏洞中用于跳转后执行的代码。本文的代码是在ubuntu 18.04 64位的linux操作系统。</p>
+<p>​		首先是一个用于执行shellcode的c语言程序：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">char</span> shellcode[] = <span class="string">&quot;&quot;</span>; <span class="comment">// 之后存放shellcode进来</span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> <span class="type">const</span> *argv[])</span> &#123;</span><br><span class="line">  (*(<span class="type">void</span>(*)() shellcode)();</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>其中<code>(*(void(*)()) shellcode)();</code>拆开来看首先是<code>(void(*)()) shell code</code>，将shellcode转换为函数指针，指向void()形式的函数，再加一个<code>*</code>是对这个指针进行取值，然后再最右边使用<code>()</code>调用这个函数。在调用后会执行shellcode中的代码。</p>
+<p>​		为了实现生成新的shell进程，这里使用execve系统调用，execve需要传入三个参数，分别是新打开的应用或者脚本的路径、参数的字符串数组argv（最后一个元素是NULL）、环境变量的字符串数组envp（最后一个元素是NULL）<code>execve(&quot;/bin/sh&quot;, NULL, NULL);</code>。</p>
+<p>​		使用<code>syscall</code>汇编指令调用系统调用，需要查看系统调用号64位的系统在<code>/usr/include/x86_64-linux-gnu/asm/unistd_64.h</code>文件夹里。使用下面的命令查看：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cat</span> unistd_64.h | grep execve</span><br><span class="line">// <span class="comment">#define __NR_execve 59</span></span><br></pre></td></tr></table></figure>
+
+<p>可以看到execve的系统调用号是59，十六进制的0x3b。</p>
+<p>​		然后编写shellcode汇编代码，核心是<code>syscall</code>汇编指令，这个指令中rax寄存器存放系统调用编号，这里是0x3b，在x86-64里，使用rdi、rsi、rdx寄存器分别存放第一、第二、第三个参数，一共可以用6个寄存器存放参数，多出的参数或者参数不是数字都是使用栈来传送。rdi寄存器存放execve的第一个参数，rsi存放参数字符数组地址（这里使用NULL，也就是0），rdx存放环境变量数组地址（也是NULL）。下面是汇编代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">; test.s</span><br><span class="line">section .text</span><br><span class="line">    global _start</span><br><span class="line">_start:</span><br><span class="line">    sub rsp, 8</span><br><span class="line">    mov dword [rsp], 0x6e69622f</span><br><span class="line">    mov dword [rsp+4], 0x0068732f</span><br><span class="line">    mov rdi, rsp ;第一参数</span><br><span class="line">    xor rsi, rsi ;第二参数，0</span><br><span class="line">    xor rdx, rdx ;第三参数，0</span><br><span class="line">    xor rax, rax </span><br><span class="line">    mov al, 0x3b ;系统调用编号</span><br><span class="line">    syscall</span><br></pre></td></tr></table></figure>
+
+<p>​		对于第二、第三参数，为了让代码变得比较短，不使用<code>mov rsi, 0</code>来实现寄存器变为0，而是使用<code>xor rsi, rsi</code>来清零rsi。</p>
+<p>​		传递路径给系统调用,如上面代码所示，使用栈存放路径，最后将栈地址存放到rdi中，对于这种方法需要将<code>/bin/sh</code>转换为十六进制小端顺序，<strong>然后在末尾补上0</strong>，因为nasm不能一次push进4字的数据，但是它每次push会是rsp减少8，所以这里是分两次存入的，栈是从高到低的，首先放进<code>0x6e69622f</code>，然后存入<code>0x0068732f</code>，最后将栈指针给rdi（第一参数）。</p>
+<p>​		编写好后使用汇编编译工具NASM编译：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nasm -f elf64 test.s</span><br></pre></td></tr></table></figure>
+
+<p>​		因为是在64位系统中，需要指定elf64，然后使用链接器将其变为可执行程序。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ld test.o -o <span class="built_in">test</span></span><br></pre></td></tr></table></figure>
+
+<p>​		最后执行test可以看到一个新的sh。</p>
+<p>​		既然汇编代码已经写好，就需要将其变为字符串形式，使用：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">objdump -s <span class="built_in">test</span></span><br></pre></td></tr></table></figure>
+
+<p>得到.text代码，将其放入python脚本中</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># shellcode.py</span></span><br><span class="line">code = <span class="string">&#x27;4883ec10c704242f62696ec74424042f7368004889e74831f64831c04831d2b03b0f05&#x27;</span></span><br><span class="line">result = <span class="string">&quot;&quot;</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">0</span>, <span class="built_in">len</span>(code), <span class="number">2</span>):</span><br><span class="line">    <span class="keyword">if</span> i &lt; <span class="built_in">len</span>(code) - <span class="number">1</span>:</span><br><span class="line">        result += <span class="string">&#x27;\\x&#x27;</span> + code[i:i+<span class="number">2</span>]</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        result += <span class="string">&#x27;\\x&#x27;</span> + code[i]</span><br><span class="line"><span class="built_in">print</span>(result)</span><br></pre></td></tr></table></figure>
+
+<p>将输出复制到shellcode字符数组中，我们看看可不可以执行shellcode了</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// shellcode.c</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="type">char</span> shellcode[] = </span><br><span class="line">  <span class="string">&quot;\x48\x83\xec\x10\xc7\x04\x24\x2f\x62\x69\x6e\xc7\x44\x24\x04\x2f\x73\x68\x00\x48\x89\xe7\x48\x31\xf6\x48\x31\xc0\x48\x31\xd2\xb0\x3b\x0f\x05&quot;</span>;</span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> <span class="type">const</span> *argv[])</span></span><br><span class="line">&#123;</span><br><span class="line">    (*(<span class="type">void</span> (*)()) shellcode) ();</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>因为GCC默认是有exec保护，所以编译时需要增加编译选项：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gcc -z execstack shellcode.c</span><br></pre></td></tr></table></figure>
+
+<p>最后可以看到效果，打开了一个新的sh：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ss@ss-VirtualBox:~/Downloads$ ./a.out</span><br><span class="line">$ </span><br></pre></td></tr></table></figure>
+
+<h2 id="附录"><a href="#附录" class="headerlink" title="附录"></a>附录</h2><ol>
+<li><p>可以使用gdb调试shellcode.c，编译后的函数指针指行是一个call *地址的指令，可以step in来查看行之后的shellcode里面的代码。</p>
+</li>
+<li><p>因为这里用了execve这个系统调用，我们可以使用strace命令，查看程序的系统调用执行状况，前几次都出现execve(null,null,null)这样参数传递错误的情况，我才想起来64位参数传递用的是rsi、rdi这些寄存器。</p>
+</li>
+<li><p>使用label: db ‘&#x2F;bin&#x2F;sh’，mov rdi, label的形式会出现找不到路径，因为ld后的代码引用label的地址竟然是固定的，我得再看看链接的原理。</p>
+</li>
+<li><p>edb debugger好好用！</p>
+</li>
+</ol>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ol>
+<li><p>32位shellcode编写 <a href="https://nobe4.fr/shellcode-for-by-newbie/">https://nobe4.fr/shellcode-for-by-newbie/</a></p>
+</li>
+<li><p>linux下execve汇编 <a href="https://stackoverflow.com/questions/42741276/nasm-assembly-sys-execve-bin-sh">https://stackoverflow.com/questions/42741276/nasm-assembly-sys-execve-bin-sh</a></p>
+</li>
+<li><p>gdb小技巧 <a href="https://wizardforcel.gitbooks.io/100-gdb-tips/print-registers.html">https://wizardforcel.gitbooks.io/100-gdb-tips/print-registers.html</a></p>
+</li>
+</ol>
+</div><div><ul class="post-copyright"><li class="post-copyright-author"><strong>本文作者：</strong>ss</li><li class="post-copyright-link"><strong>本文链接：</strong><a href="/2019/07/26/shellcode编写/">https://ssdemajia.github.io/2019/07/26/shellcode%E7%BC%96%E5%86%99/</a></li><li class="post-copyright-license"><strong>版权声明：</strong>本站所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/cn/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0 CN</a> 许可协议。转载请注明出处！</li></ul></div><br><div class="tags"><a href="../../../../tags/ctf/">ctf</a></div><div class="post-nav"><a class="pre" href="../../../08/03/%E5%AE%9E%E9%AA%8C%E5%90%A7-py137/">实验吧 py137</a><a class="next" href="../../25/%E5%AE%9E%E9%AA%8C%E5%90%A7-debug32/">实验吧 debug32</a></div><div id="comments"><div id="disqus_thread"><div class="btn_click_load"><button class="disqus_click_btn">阅读评论（请确保 Disqus 可以正常加载）</button></div><script type="text/javascript">var disqus_config = function () {
+    this.page.url = 'https://ssdemajia.github.io/2019/07/26/shellcode编写/';
+    this.page.identifier = '2019/07/26/shellcode编写/';
+    this.page.title = 'shellcode编写';
+  };</script><script type="text/javascript" id="disqus-lazy-load-script">$.ajax({
+url: 'https://disqus.com/next/config.json',
+timeout: 2500,
+type: 'GET',
+success: function(){
+  var d = document;
+  var s = d.createElement('script');
+  s.src = '//dowob.disqus.com/embed.js';
+  s.setAttribute('data-timestamp', + new Date());
+  (d.head || d.body).appendChild(s);
+  $('.disqus_click_btn').css('display', 'none');
+},
+error: function() {
+  $('.disqus_click_btn').css('display', 'block');
+}
+});</script><script type="text/javascript" id="disqus-click-load">$('.btn_click_load').click(() => {  //click to load comments
+    (() => { // DON'T EDIT BELOW THIS LINE
+        var d = document;
+        var s = d.createElement('script');
+        s.src = '//dowob.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', + new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+    $('.disqus_click_btn').css('display','none');
+});</script><script type="text/javascript" id="disqus-count-script">$(function() {
+     var xhr = new XMLHttpRequest();
+     xhr.open('GET', '//disqus.com/next/config.json', true);
+     xhr.timeout = 2500;
+     xhr.onreadystatechange = function () {
+       if (xhr.readyState === 4 && xhr.status === 200) {
+         $('.post-meta .post-comments-count').show();
+         var s = document.createElement('script');
+         s.id = 'dsq-count-scr';
+         s.src = 'https://dowob.disqus.com/count.js';
+         s.async = true;
+         (document.head || document.body).appendChild(s);
+       }
+     };
+     xhr.ontimeout = function () { xhr.abort(); };
+     xhr.send(null);
+   });  </script></div></div></div></div></div><div class="pure-u-1 pure-u-md-4"><div id="footer">Copyright © 2024 <a href="../../../../." rel="nofollow">SS.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/ssdemajia"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/ssdemajia"> SS.</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="../../../../js/totop.js?v=0.0.0" async></script><script type="text/javascript" src="../../../../js/codeblock-resizer.js?v=0.0.0"></script><script type="text/javascript" src="../../../../js/smartresize.js?v=0.0.0"></script></div></body></html>

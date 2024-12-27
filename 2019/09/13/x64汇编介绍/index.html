@@ -1,0 +1,232 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title>x64汇编介绍 | SS</title><link rel="stylesheet" type="text/css" href="../../../../css/style.css?v=0.0.0"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/normalize/8.0.1/normalize.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/pure-min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/grids-responsive-min.css"><link rel="stylesheet" href="//lib.baomitu.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//lib.baomitu.com/jquery/3.3.1/jquery.min.js"></script><link rel="icon" mask="" sizes="any" href="../../../../favicon.ico"><link rel="Shortcut Icon" type="image/x-icon" href="../../../../favicon.ico"><link rel="apple-touch-icon" href="../../../../apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="../../../../apple-touch-icon.png"><link rel="alternate" type="application/atom+xml" href="../../../../atom.xml"><script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+ga('create','UA-134074056-1','auto');ga('send','pageview');</script><meta name="generator" content="Hexo 7.3.0"></head><body><div class="body_container"><div id="header"><div class="site-name"><a id="logo" href="../../../../.">SS</a><p class="description">不知道在说些什么</p></div><div id="nav-menu"><a class="current" href="../../../../."><i class="fa undefined"> 首页</i></a><a href="../../../../archives/"><i class="fa undefined"> 归档</i></a><a href="../../../../about/"><i class="fa undefined"> 关于</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-4"><div class="content_container"><div class="post"><h1 class="post-title">x64汇编介绍</h1><div class="post-meta">Sep 13, 2019<span> | </span><span class="category"><a href="../../../../categories/%F0%9F%94%92%E5%AE%89%E5%85%A8/">🔒安全</a></span><script src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script><span id="busuanzi_container_page_pv"> | <span id="busuanzi_value_page_pv"></span><span> 阅读</span></span><span class="post-time"><span class="post-meta-item-text"> | </span><span class="post-meta-item-icon"><i class="fa fa-keyboard-o"></i><span class="post-count"> 1.3k</span><span class="post-meta-item-text"> 字</span></span></span><span class="post-time"> | <span class="post-meta-item-icon"><i class="fa fa-hourglass-half"></i><span class="post-count"> 5</span><span class="post-meta-item-text"> 分钟</span></span></span></div><div class="post-content"><p>大多数的资料还是介绍x86汇编，而现在的程序大多是64位了。</p>
+<h2 id="寄存器变动"><a href="#寄存器变动" class="headerlink" title="寄存器变动"></a>寄存器变动</h2><p>增加了64位寄存器 R8-R15, 扩展了原来已有的寄存器RAX, RBX, RCX, RDX, RBP, RSI, RDI, RSP。原来的代码指针寄存器EIP也扩展成64位的RIP（RIP执行下一条代码）。RSP作为栈指针。</p>
+<p><img src="64%E4%BD%8D%E5%AF%84%E5%AD%98%E5%99%A8.png"></p>
+<p>同时寄存器可以分为多个宽度来访问，比如RAX寄存器，可以使用RAX来访问64位的数据，EAX访问低位的32位数据，AX访问低位的16位数据，AH访问AX中高8位，AL访问AX中低8位。而对于64位中新增加的寄存器R8-R15，R8（访问64位）、R8D（低32位）、R8W（低16位）、R8B（低8位）。</p>
+<p>RFLAGS寄存器保存各种操作的标志位，它是x86中EFLAGS的64位扩展。</p>
+<p><strong>常用标志位：</strong></p>
+<table>
+<thead>
+<tr>
+<th>符号</th>
+<th>位数</th>
+<th>名称</th>
+<th>设置</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>CF</td>
+<td>0</td>
+<td>Carry</td>
+<td>当发生进位或者借位时</td>
+</tr>
+<tr>
+<td>PF</td>
+<td>2</td>
+<td>Parity</td>
+<td>运算得到的结果中1的个数为偶数时置为1</td>
+</tr>
+<tr>
+<td>AF</td>
+<td>4</td>
+<td>Ajust</td>
+<td>辅助进位</td>
+</tr>
+<tr>
+<td>ZF</td>
+<td>6</td>
+<td>Zero</td>
+<td>结果为0时置1</td>
+</tr>
+<tr>
+<td>SF</td>
+<td>7</td>
+<td>Sign</td>
+<td>结果为负时置1</td>
+</tr>
+<tr>
+<td>OF</td>
+<td>11</td>
+<td>Overflow</td>
+<td>溢出时置1</td>
+</tr>
+<tr>
+<td>DF</td>
+<td>10</td>
+<td>Direction</td>
+<td>字符串操作方向，置1时为增加方向</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody></table>
+<p><strong>浮点数单元（FPU）</strong>包含8个寄存器FPR0-FPR7，每个寄存器是80-bit，其中可以使用MMX0-MMX7范围这些寄存器的64-bit。</p>
+<h2 id="指令基础"><a href="#指令基础" class="headerlink" title="指令基础"></a>指令基础</h2><p>指令结构：<code>指令 [目的操作],[源操作]</code> </p>
+<h3 id="寻址指令"><a href="#寻址指令" class="headerlink" title="寻址指令"></a>寻址指令</h3><p>直接数赋值：<code>ADD EAX, 14</code> ，直接将14存放到EAX中。</p>
+<p>寄存器之间：<code>ADD R8L, AL</code>，将8位的AL中的值存放到R8L中。</p>
+<p>间接存放：使用公式<code>直接数[放大因子 * 索引值 + 基础值]</code> ，比如<code>MOV R8W, 1234[8*RAX+RCX]</code>等于取地址8*RAX+RCX+1234地址的值到R8W中。当目标寄存器的宽度与内存宽度不符合时，需要指定怎么取值，比如&#96;MOV ECX, dword ptr [RBX+RDI]</p>
+<table>
+<thead>
+<tr>
+<th>Opcode</th>
+<th>Meaning</th>
+<th>Opcode</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>MOV</td>
+<td>Move to&#x2F;from&#x2F;between memory and registers</td>
+<td>AND&#x2F;OR&#x2F;XOR&#x2F;NOT</td>
+<td>Bitwise operations</td>
+</tr>
+<tr>
+<td>CMOV*</td>
+<td>Various conditional moves</td>
+<td>SHR&#x2F;SAR</td>
+<td>Shift right logical&#x2F;arithmetic</td>
+</tr>
+<tr>
+<td>XCHG</td>
+<td>Exchange</td>
+<td>SHL&#x2F;SAL</td>
+<td>Shift left logical&#x2F;arithmetic</td>
+</tr>
+<tr>
+<td>BSWAP</td>
+<td>Byte swap</td>
+<td>ROR&#x2F;ROL</td>
+<td>Rotate right&#x2F;left</td>
+</tr>
+<tr>
+<td>PUSH&#x2F;POP</td>
+<td>Stack usage</td>
+<td>RCR&#x2F;RCL</td>
+<td>Rotate right&#x2F;left through carry bit</td>
+</tr>
+<tr>
+<td>ADD&#x2F;ADC</td>
+<td>Add&#x2F;with carry</td>
+<td>BT&#x2F;BTS&#x2F;BTR</td>
+<td>Bit test&#x2F;and set&#x2F;and reset</td>
+</tr>
+<tr>
+<td>SUB&#x2F;SBC</td>
+<td>Subtract&#x2F;with carry</td>
+<td>JMP</td>
+<td>Unconditional jump</td>
+</tr>
+<tr>
+<td>MUL&#x2F;IMUL</td>
+<td>Multiply&#x2F;unsigned</td>
+<td>JE&#x2F;JNE&#x2F;JC&#x2F;JNC&#x2F;J*</td>
+<td>Jump if equal&#x2F;not equal&#x2F;carry&#x2F;not carry&#x2F; many others</td>
+</tr>
+<tr>
+<td>DIV&#x2F;IDIV</td>
+<td>Divide&#x2F;unsigned</td>
+<td>LOOP&#x2F;LOOPE&#x2F;LOOPNE</td>
+<td>Loop with ECX</td>
+</tr>
+<tr>
+<td>INC&#x2F;DEC</td>
+<td>Increment&#x2F;Decrement</td>
+<td>CALL&#x2F;RET</td>
+<td>Call subroutine&#x2F;return</td>
+</tr>
+<tr>
+<td>NEG</td>
+<td>Negate</td>
+<td>NOP</td>
+<td>No operation</td>
+</tr>
+<tr>
+<td>CMP</td>
+<td>Compare</td>
+<td>CPUID</td>
+<td>CPU information</td>
+</tr>
+</tbody></table>
+<h2 id="操作系统相关"><a href="#操作系统相关" class="headerlink" title="操作系统相关"></a>操作系统相关</h2><p>理论上64位操作系统可以寻址64位地址，实际上目前的芯片使用低48位，因此寻址范围是0～0x7fff ffffffff。地址范围0<del>0x7fff ffff ffff 和地址范围0xffff 8000 0000 0000 ~ 0x ffff ffff ffff ffff作为虚拟地址空间。其他的空间不使用，因为完整的64位内存需要很大的page table。许多系统使用0xffff 8000 0000 0000 ~ 0x ffff ffff ffff ffff作为内核地址范围，而0</del>0x7fff ffff ffff作为用户空间地址范围。</p>
+<p><img src="64%E4%BD%8D%E5%9C%B0%E5%9D%80%E7%A9%BA%E9%97%B4.png"></p>
+<h2 id="调用惯例"><a href="#调用惯例" class="headerlink" title="调用惯例"></a>调用惯例</h2><p>Microsoft x64调用惯例使用fastcall：</p>
+<ol>
+<li>RCX、RDX、R8、R9用于从左到右的整数、指针参数。</li>
+<li>XMM0、XMM1、XMM3用于浮点参数。</li>
+<li>剩下的参数从左到右push到栈中。</li>
+<li>调用者在调用前需要存储RCX、RDX、XMM0等用于存放参数的寄存器。</li>
+<li>调用者在调用后清理分配的栈空间。</li>
+<li>浮点数返回值存放在XMM0中、整数返回值存放在RAX中。</li>
+<li>当返回值过大时，返回值存放在栈中，由调用者分配空间，返回值地址存放在RCX中。</li>
+<li>栈16字节对齐。</li>
+<li>被调用者需要自己保存RAX、RBP、RDI、RSI、R12、R14、R15.</li>
+</ol>
+<p>GNU C的调用惯例cdecl：</p>
+<ol>
+<li>从右到左push参数到栈中。</li>
+<li>64位系统下前6个整数、指针参数使用RDI、RSI、RDX、RCX、R8、R9传入。</li>
+<li>函数调用者保存RBP、恢复RBP。</li>
+<li>返回地址保存在[RSP]中，第一个变量存放在[RSP+8]，依次存放。</li>
+<li>栈指针RSP必须16字节对齐。</li>
+</ol>
+<h2 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h2><p>main这个符号是默认的入口函数，所以不用在gcc里面更改入口，extern printf表示这是外部符号，在链接时重定向。RDI传入printf函数的第一个参数，RSI传入第二个参数。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">global main</span><br><span class="line"></span><br><span class="line">extern printf</span><br><span class="line"></span><br><span class="line">SECTION .text</span><br><span class="line"></span><br><span class="line">main:</span><br><span class="line">    push rbp</span><br><span class="line">    mov rsi, message</span><br><span class="line">    mov rdi, format</span><br><span class="line">    call printf</span><br><span class="line">    mov ax, 0</span><br><span class="line">    pop rbp</span><br><span class="line">    ret</span><br><span class="line">format:</span><br><span class="line">    db &quot;output: %s&quot;, 0xa, 0</span><br><span class="line">message:</span><br><span class="line">    db &quot;hello ss!&quot;, 0</span><br></pre></td></tr></table></figure>
+
+<p>编译链接执行：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nasm -felf64 libcall.S &amp;&amp; gcc -no-pie libcall.o &amp;&amp; ./a.out </span><br></pre></td></tr></table></figure>
+<p>在Ubuntu 18.04 x64的环境下。</p>
+<p><code>-no-pie</code>：关闭内核加载程序时，随机化虚拟地址的功能。PIE（Position Independent Executables）用于库函数固化的结果（an output of the hardened package build process)，一个PIE二进制程序和它的依赖会被加载到虚拟内存的随机地址，使得那些覆盖return地址的攻击变得困难。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p>内容大多来自《Introduction to x64 Assembly》这本书</p>
+<p>PIE介绍 <a href="https://access.redhat.com/blogs/766093/posts/1975793">https://access.redhat.com/blogs/766093/posts/1975793</a></p>
+<p>NSAM参考 <a href="http://cee.github.io/NASM-Tutorial/">http://cee.github.io/NASM-Tutorial/</a></p>
+</div><div><ul class="post-copyright"><li class="post-copyright-author"><strong>本文作者：</strong>ss</li><li class="post-copyright-link"><strong>本文链接：</strong><a href="/2019/09/13/x64汇编介绍/">https://ssdemajia.github.io/2019/09/13/x64%E6%B1%87%E7%BC%96%E4%BB%8B%E7%BB%8D/</a></li><li class="post-copyright-license"><strong>版权声明：</strong>本站所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/cn/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0 CN</a> 许可协议。转载请注明出处！</li></ul></div><br><div class="tags"><a href="../../../../tags/%E5%AE%89%E5%85%A8/">安全</a></div><div class="post-nav"><a class="pre" href="../../18/%E7%BB%99xv6%E6%B7%BB%E5%8A%A0%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8/">给xv6添加系统调用</a><a class="next" href="../../../08/10/%E8%87%AA%E5%88%B6%E8%AF%84%E8%AE%BA%E6%8F%92%E4%BB%B6/">自制评论插件</a></div><div id="comments"><div id="disqus_thread"><div class="btn_click_load"><button class="disqus_click_btn">阅读评论（请确保 Disqus 可以正常加载）</button></div><script type="text/javascript">var disqus_config = function () {
+    this.page.url = 'https://ssdemajia.github.io/2019/09/13/x64汇编介绍/';
+    this.page.identifier = '2019/09/13/x64汇编介绍/';
+    this.page.title = 'x64汇编介绍';
+  };</script><script type="text/javascript" id="disqus-lazy-load-script">$.ajax({
+url: 'https://disqus.com/next/config.json',
+timeout: 2500,
+type: 'GET',
+success: function(){
+  var d = document;
+  var s = d.createElement('script');
+  s.src = '//dowob.disqus.com/embed.js';
+  s.setAttribute('data-timestamp', + new Date());
+  (d.head || d.body).appendChild(s);
+  $('.disqus_click_btn').css('display', 'none');
+},
+error: function() {
+  $('.disqus_click_btn').css('display', 'block');
+}
+});</script><script type="text/javascript" id="disqus-click-load">$('.btn_click_load').click(() => {  //click to load comments
+    (() => { // DON'T EDIT BELOW THIS LINE
+        var d = document;
+        var s = d.createElement('script');
+        s.src = '//dowob.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', + new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+    $('.disqus_click_btn').css('display','none');
+});</script><script type="text/javascript" id="disqus-count-script">$(function() {
+     var xhr = new XMLHttpRequest();
+     xhr.open('GET', '//disqus.com/next/config.json', true);
+     xhr.timeout = 2500;
+     xhr.onreadystatechange = function () {
+       if (xhr.readyState === 4 && xhr.status === 200) {
+         $('.post-meta .post-comments-count').show();
+         var s = document.createElement('script');
+         s.id = 'dsq-count-scr';
+         s.src = 'https://dowob.disqus.com/count.js';
+         s.async = true;
+         (document.head || document.body).appendChild(s);
+       }
+     };
+     xhr.ontimeout = function () { xhr.abort(); };
+     xhr.send(null);
+   });  </script></div></div></div></div></div><div class="pure-u-1 pure-u-md-4"><div id="footer">Copyright © 2024 <a href="../../../../." rel="nofollow">SS.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/ssdemajia"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/ssdemajia"> SS.</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="../../../../js/totop.js?v=0.0.0" async></script><script type="text/javascript" src="../../../../js/codeblock-resizer.js?v=0.0.0"></script><script type="text/javascript" src="../../../../js/smartresize.js?v=0.0.0"></script></div></body></html>

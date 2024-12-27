@@ -1,0 +1,346 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title>翻译 qemu tcg 介绍 | SS</title><link rel="stylesheet" type="text/css" href="../../../../css/style.css?v=0.0.0"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/normalize/8.0.1/normalize.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/pure-min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/grids-responsive-min.css"><link rel="stylesheet" href="//lib.baomitu.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//lib.baomitu.com/jquery/3.3.1/jquery.min.js"></script><link rel="icon" mask="" sizes="any" href="../../../../favicon.ico"><link rel="Shortcut Icon" type="image/x-icon" href="../../../../favicon.ico"><link rel="apple-touch-icon" href="../../../../apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="../../../../apple-touch-icon.png"><link rel="alternate" type="application/atom+xml" href="../../../../atom.xml"><script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+ga('create','UA-134074056-1','auto');ga('send','pageview');</script><meta name="generator" content="Hexo 7.3.0"></head><body><div class="body_container"><div id="header"><div class="site-name"><a id="logo" href="../../../../.">SS</a><p class="description">不知道在说些什么</p></div><div id="nav-menu"><a class="current" href="../../../../."><i class="fa undefined"> 首页</i></a><a href="../../../../archives/"><i class="fa undefined"> 归档</i></a><a href="../../../../about/"><i class="fa undefined"> 关于</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-4"><div class="content_container"><div class="post"><h1 class="post-title">翻译 qemu tcg 介绍</h1><div class="post-meta">Feb 22, 2020<script src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script><span id="busuanzi_container_page_pv"> | <span id="busuanzi_value_page_pv"></span><span> 阅读</span></span><span class="post-time"><span class="post-meta-item-text"> | </span><span class="post-meta-item-icon"><i class="fa fa-keyboard-o"></i><span class="post-count"> 5.3k</span><span class="post-meta-item-text"> 字</span></span></span><span class="post-time"> | <span class="post-meta-item-icon"><i class="fa fa-hourglass-half"></i><span class="post-count"> 21</span><span class="post-meta-item-text"> 分钟</span></span></span></div><div class="post-content"><h1 id="1-介绍"><a href="#1-介绍" class="headerlink" title="1.介绍"></a>1.介绍</h1><p>TCG（微型代码生成器）最初是C编译器的通用后端。 它被简化为可以在QEMU中使用。 它也起源于Paul Brook编写的QOP代码生成器。</p>
+<h1 id="2-定义"><a href="#2-定义" class="headerlink" title="2.定义"></a>2.定义</h1><p>TCG吸收类似于RISC的“ TCG ops”定义，并对它们执行一些优化，包括活动性分析（liveness analysis）和琐碎的常量表达式评估（trivial constant expression evaluation）。然后，在宿主CPU后端（也称为TCG“target”）中实现TCG操作。</p>
+<p>TCG “target”：是我们为其生成代码的体系结构。当然，它与QEMU的“target”（即模拟体系结构）不同。当TCG开始作为用于交叉编译的通用C后端时，尽管QEMU从来没有这样的假设，但TCG目标不同于主机。</p>
+<p>在本文档中，我们使用“ guest”来指定我们正在仿真的体系结构。 “target”始终表示TCG目标，即运行QEMU的计算机。</p>
+<p>TCG“function”：对应于QEMU转换块（TB）。</p>
+<p>TCG“temporary”：是仅存在于基本块中的变量。在每个函数中显式分配了临时项。</p>
+<p>TCG“local temporary”：是仅存在于函数中的变量。在每个函数中显式分配了本地临时变量。</p>
+<p>TCG“global”：是所有函数中都存在的变量（等效于C全局变量）。它们在定义的功能之前定义。 TCG全局可以是内存地址（例如QEMU CPU寄存器），固定宿主机器寄存器（例如QEMU CPU状态指针）或存储在QEMU TB之外的寄存器中的内存地址（尚未实现）。</p>
+<p>TCG“basic block”对应于由分支指令终止的指令列表。</p>
+<p>具有“unspecified behavior”：的操作可能会导致崩溃。</p>
+<p>具有“unspecified behavior”的操作不应崩溃。但是，结果可能是几种可能性之一，因此可以认为是“不确定的结果”。</p>
+<h1 id="3-中间表示"><a href="#3-中间表示" class="headerlink" title="3.中间表示"></a>3.中间表示</h1><h2 id="3-1-介绍"><a href="#3-1-介绍" class="headerlink" title="3.1 介绍"></a>3.1 介绍</h2><p>TCG指令对临时变量，局部临时变量或全局变量进行操作。 TCG指令和变量是强类型的。 支持两种类型：32位整数和64位整数。 根据TCG目标字的大小，指针被定义为32位或64位整数的别名。</p>
+<p>每个指令都有固定数量的输出变量操作数、输入变量操作数、始终为常数的操作数。</p>
+<p>值得注意的例外是具有可变数量的输出和输入的调用指令。</p>
+<p>以文本形式，输出操作数通常是第一个，然后是输入操作数，然后是常量操作数。 输出类型包含在指令名称中。 常量以“ $”为前缀。</p>
+<p>add_i32 t0，t1，t2（表示t0 &lt;-t1 + t2）</p>
+<h2 id="3-2-假设"><a href="#3-2-假设" class="headerlink" title="3.2 假设"></a>3.2 假设</h2><p><strong>基本块</strong></p>
+<ul>
+<li>基本块在分支（例如brcond_i32指令），goto_tb和exit_tb指令之后结束。</li>
+<li>基本块在上一个基本块结束后或在set_label指令后开始。</li>
+</ul>
+<p>基本块结束后，临时对象的内容将被破坏，但本地临时对象和全局变量将被保留。</p>
+<p>尚不支持浮点类型</p>
+<p>指针：取决于TCG目标，指针大小为32位或64位。 TCG_TYPE_PTR类型是TCG_TYPE_I32或TCG_TYPE_I64的别名。</p>
+<p><strong>帮助函数：</strong></p>
+<p>使用<code>tcg_gen_helper_x_y</code>可以调用任何采用i32，i64或指针类型的函数。默认情况下，在调用帮助函数前，所有全局变量都存储在其规范位置，并且假定该函数可以对其进行修改。默认情况下，允许帮助函数修改CPU状态或引发异常。</p>
+<p>可以使用以下功能修饰符来覆盖它：</p>
+<ul>
+<li><code>TCG_CALL_NO_READ_GLOBALS</code>表示帮助程序不会直接或通过异常读取全局变量。在调用帮助函数之前，不会将它们保存到规范位置。</li>
+<li><code>TCG_CALL_NO_WRITE_GLOBALS</code>表示帮助程序不会修改任何全局变量。它们只会在调用帮助函数之前保存到规范位置，但之后将不会重新加载。</li>
+<li><code>TCG_CALL_NO_SIDE_EFFECTS</code>表示如果不使用返回值，则对该函数的调用将被删除。</li>
+</ul>
+<p>请注意，<code>TCG_CALL_NO_READ_GLOBALS</code>意味着<code>TCG_CALL_NO_WRITE_GLOBALS</code>。</p>
+<p>在某些TCG目标（例如x86）上，支持多种调用约定。</p>
+<p><strong>分支：</strong></p>
+<ul>
+<li>使用指令<code>br</code>跳转到标签。</li>
+</ul>
+<h2 id="3-3-代码优化"><a href="#3-3-代码优化" class="headerlink" title="3.3 代码优化"></a>3.3 代码优化</h2><p>生成说明时，至少可以依靠以下优化：</p>
+<ul>
+<li><p>简化了单个指令，例如下面代码将被压缩</p>
+<p>  and_i32 t0，t0，$ 0xffffffff</p>
+</li>
+</ul>
+<p> 在基本块级别进行存活分析。 该信息用于禁止从死变量移动到另一个变量。 它还用于删除计算无效结果的指令。 后者对于QEMU中的条件代码优化特别有用。</p>
+<p>   在以下示例中：</p>
+ <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">add_i32 t0，t1，t2</span><br><span class="line">add_i32 t0，t0，$ <span class="number">1</span></span><br><span class="line">mov_i32 t0，$ <span class="number">1</span></span><br></pre></td></tr></table></figure>
+
+<p>   仅保留最后一条指令。</p>
+<h2 id="3-4-指令参考"><a href="#3-4-指令参考" class="headerlink" title="3.4 指令参考"></a>3.4 指令参考</h2><h3 id="3-4-1-函数调用"><a href="#3-4-1-函数调用" class="headerlink" title="3.4.1 函数调用"></a>3.4.1 <strong>函数调用</strong></h3><p><code>call &lt;ret&gt; &lt;params&gt; ptr</code></p>
+<p>调用函数 ‘ptr’ (指针类型)</p>
+<p><code>&lt;ret&gt; </code>可选地 32 bit or 64 bit 返回值<br><code>&lt;params&gt; </code>可选地 32 bit or 64 bit 参数</p>
+<h3 id="3-4-2-Jumps-Labels"><a href="#3-4-2-Jumps-Labels" class="headerlink" title="3.4.2 Jumps&#x2F;Labels"></a>3.4.2 Jumps&#x2F;Labels</h3><p><code>set_label $label</code></p>
+<p>在当前程序点定义标签’label’</p>
+<p><code>br $label</code></p>
+<p>跳转到标签</p>
+<p><code>brcond_i32/i64 t0, t1, cond, label</code></p>
+<p>当t0与t1的条件运算cond的结果为true时跳转到label</p>
+<p>条件运算cond可以是:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">TCG_COND_EQ</span><br><span class="line">TCG_COND_NE</span><br><span class="line">TCG_COND_LT <span class="comment">/* signed */</span></span><br><span class="line">TCG_COND_GE <span class="comment">/* signed */</span></span><br><span class="line">TCG_COND_LE <span class="comment">/* signed */</span></span><br><span class="line">TCG_COND_GT <span class="comment">/* signed */</span></span><br><span class="line">TCG_COND_LTU <span class="comment">/* unsigned */</span></span><br><span class="line">TCG_COND_GEU <span class="comment">/* unsigned */</span></span><br><span class="line">TCG_COND_LEU <span class="comment">/* unsigned */</span></span><br><span class="line">TCG_COND_GTU <span class="comment">/* unsigned */</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="3-4-3-数学运算"><a href="#3-4-3-数学运算" class="headerlink" title="3.4.3 数学运算"></a>3.4.3 数学运算</h3><p><code>add_i32/i64 t0, t1, t2</code></p>
+<p>t0&#x3D;t1+t2</p>
+<p><code>sub_i32/i64 t0, t1, t2</code></p>
+<p>t0&#x3D;t1-t2</p>
+<p><code>neg_i32/i64 t0, t1</code></p>
+<p>t0&#x3D;-t1 (补码形式)</p>
+<p><code>mul_i32/i64 t0, t1, t2</code></p>
+<p>t0&#x3D;t1*t2</p>
+<p><code>div_i32/i64 t0, t1, t2</code></p>
+<p>t0&#x3D;t1&#x2F;t2 (有符号). 如果被零除或溢出，则行为不确定。</p>
+<p><code>divu_i32/i64 t0, t1, t2</code></p>
+<p>t0&#x3D;t1&#x2F;t2 (无符号). 如果被零除，则行为不确定。</p>
+<p><code>rem_i32/i64 t0, t1, t2</code></p>
+<p>t0&#x3D;t1%t2 (有符号). 如果被零除或溢出，则行为不确定。</p>
+<p><code>remu_i32/i64 t0, t1, t2</code></p>
+<p>t0&#x3D;t1%t2 (无符号). 如果被零除，则行为不确定。</p>
+<h3 id="3-4-4-逻辑运算"><a href="#3-4-4-逻辑运算" class="headerlink" title="3.4.4 逻辑运算"></a>3.4.4 逻辑运算</h3><p><code>and_i32/i64 t0, t1, t2</code></p>
+<p>t0&#x3D;t1&amp;t2</p>
+<p><code>or_i32/i64 t0, t1, t2</code></p>
+<p>t0&#x3D;t1|t2</p>
+<p><code>xor_i32/i64 t0, t1, t2</code></p>
+<p>t0&#x3D;t1^t2</p>
+<p><code>not_i32/i64 t0, t1</code></p>
+<p>t0&#x3D;~t1</p>
+<p><code>andc_i32/i64 t0, t1, t2</code></p>
+<p>t0&#x3D;t1&amp;~t2</p>
+<p><code>eqv_i32/i64 t0, t1, t2</code></p>
+<p>t0&#x3D;<del>(t1^t2), or equivalently, t0&#x3D;t1^</del>t2</p>
+<p><code>nand_i32/i64 t0, t1, t2</code></p>
+<p>t0&#x3D;~(t1&amp;t2)</p>
+<p><code>nor_i32/i64 t0, t1, t2</code></p>
+<p>t0&#x3D;~(t1|t2)</p>
+<p><code>orc_i32/i64 t0, t1, t2</code></p>
+<p>t0&#x3D;t1|~t2</p>
+<p><code>clz_i32/i64 t0, t1, t2</code></p>
+<p>t0 &#x3D; t1 ? clz(t1) : t2</p>
+<p><code>ctz_i32/i64 t0, t1, t2</code></p>
+<p>t0 &#x3D; t1 ? ctz(t1) : t2</p>
+<h3 id="3-4-5-移位-旋转"><a href="#3-4-5-移位-旋转" class="headerlink" title="3.4.5 移位&#x2F;旋转"></a>3.4.5 移位&#x2F;旋转</h3><p><code>shl_i32/i64 t0, t1, t2</code></p>
+<p>t0&#x3D;t1 &lt;&lt; t2. Unspecified behavior if t2 &lt; 0 or t2 &gt;&#x3D; 32 (resp 64)</p>
+<p><code>shr_i32/i64 t0, t1, t2</code></p>
+<p>t0&#x3D;t1 &gt;&gt; t2 (unsigned). Unspecified behavior if t2 &lt; 0 or t2 &gt;&#x3D; 32 (resp 64)</p>
+<p><code>sar_i32/i64 t0, t1, t2</code></p>
+<p>t0&#x3D;t1 &gt;&gt; t2 (signed). Unspecified behavior if t2 &lt; 0 or t2 &gt;&#x3D; 32 (resp 64)</p>
+<p><code>rotl_i32/i64 t0, t1, t2</code></p>
+<p>t1向左旋转t2位<br>Unspecified behavior if t2 &lt; 0 or t2 &gt;&#x3D; 32 (resp 64)</p>
+<p><code>rotr_i32/i64 t0, t1, t2</code></p>
+<p>t1向右旋转t2位<br>Unspecified behavior if t2 &lt; 0 or t2 &gt;&#x3D; 32 (resp 64)</p>
+<h3 id="3-4-6-杂项"><a href="#3-4-6-杂项" class="headerlink" title="3.4.6 杂项"></a>3.4.6 杂项</h3><p><code>mov_i32/i64 t0, t1</code></p>
+<p>t0 &#x3D; t1</p>
+<p>t1移动到t0 (两个操作符类型必须相同).</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">ext8s_i32/i64 t0, t1</span><br><span class="line">ext8u_i32/i64 t0, t1</span><br><span class="line">ext16s_i32/i64 t0, t1</span><br><span class="line">ext16u_i32/i64 t0, t1</span><br><span class="line">ext32s_i64 t0, t1</span><br><span class="line">ext32u_i64 t0, t1</span><br></pre></td></tr></table></figure>
+
+<p>8, 16 or 32 bit sign&#x2F;zero 扩展 (both operands must have the same type)</p>
+<p><code>bswap16_i32/i64 t0, t1</code></p>
+<p>16 bit byte swap on a 32&#x2F;64 bit value. It assumes that the two&#x2F;six high order<br>bytes are set to zero.</p>
+<p><code>bswap32_i32/i64 t0, t1</code></p>
+<p>32 bit byte swap on a 32&#x2F;64 bit value. With a 64 bit value, it assumes that<br>the four high order bytes are set to zero.</p>
+<p><code>bswap64_i64 t0, t1</code></p>
+<p>64 bit byte swap</p>
+<p><code>discard_i32/i64 t0</code></p>
+<p>指示t0的值之后不再使用，这对强制删除无效代码很有效。</p>
+<p><code>deposit_i32/i64 dest, t1, t2, pos, len</code></p>
+<p>将T2作为位域存入T1，并将结果放入DEST。 位字段由POS &#x2F; LEN描述，它们是立即值：</p>
+<p>  LEN - 位域长度<br>  POS - 从LSB开始计算的第一位的位置</p>
+<p>例如, <code>deposit_i32 dest, t1, t2, 8, 4</code> 表示 从bit8开始的4-bit位域.  此操作等效于</p>
+<p> <code> dest = (t1 &amp; ~0x0f00) | ((t2 &lt;&lt; 8) &amp; 0x0f00)</code></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">extract_i32/i64 dest, t1, pos, len</span><br><span class="line">sextract_i32/i64 dest, t1, pos, len</span><br></pre></td></tr></table></figure>
+
+<p>从T1中提取一个位域，并将结果放入DEST。 位字段由POS &#x2F; LEN描述，它们是即时值，如上用于存款。 对于extract_ *，结果将用零扩展到左侧；否则，结果将扩展为0。 对于sextract_ *，结果将扩展到左侧，并带有pos + len-1的位域符号位的副本。</p>
+<p>例如”sextract_i32 dest, t1, 8, 4” 表示从bit8开始的一段4-bit位域. 操作等效于</p>
+<p><code>dest = (t1 &lt;&lt; 20) &gt;&gt; 28</code>.</p>
+<p><code>extract2_i32/i64 dest, t1, t2, pos</code></p>
+<p>对于N &#x3D; {32,64}，从t2：t1的串联中提取一个N位数，从pos开始。 tcg_gen_extract2_ {i32，i64}扩展器接受0 &lt;&#x3D; pos &lt;&#x3D; N作为输入。 后端代码生成器将看不到0或N作为这些操作码的输入。</p>
+<p><code>extrl_i64_i32 t0, t1</code></p>
+<p>仅对于64位主机，提取输入T1的低32位并将其放入32位输出T0。 根据主机，这可能是一个简单的举动，或者可能需要其他规范化。</p>
+<p><code>extrh_i64_i32 t0, t1</code></p>
+<p>仅对于64位主机，提取输入T1的高32位并将其放入32位输出T0。 根据主机的不同，这可能是简单的转换，或者可能需要其他规范化。</p>
+<h3 id="3-4-7-条件移动"><a href="#3-4-7-条件移动" class="headerlink" title="3.4.7 条件移动"></a>3.4.7 条件移动</h3><p><code>setcond_i32/i64 dest, t1, t2, cond</code></p>
+<p>dest &#x3D; (t1 cond t2)</p>
+<p>当t1与t2在条件运算cond的结果为True则设置dest为1,否则为0</p>
+<p><code>movcond_i32/i64 dest, c1, c2, v1, v2, cond</code></p>
+<p>dest &#x3D; (c1 cond c2 ? v1 : v2)</p>
+<p>当t1与t2在条件运算cond的结果为True则设置dest为V1,否则为V2</p>
+<h3 id="3-4-8-类型转换"><a href="#3-4-8-类型转换" class="headerlink" title="3.4.8 类型转换"></a>3.4.8 类型转换</h3><p><code>ext_i32_i64 t0, t1</code><br>将t1（32位）转换为t0（64位）并进行符号扩展</p>
+<p><code>extu_i32_i64 t0, t1</code><br>将t1（32位）转换为t0（64位）并进行0扩展</p>
+<p><code>trunc_i64_i32 t0, t1</code><br>将t1（64位）截断为t0（32位）</p>
+<p><code>concat_i32_i64 t0, t1, t2</code><br>构造t0（64位），取t1（32位）的低半部分和t2（32位）的高半部分。</p>
+<p><code>concat32_i64 t0, t1, t2</code><br>构造t0（64位），取t1（64位）的低半部分和t2（64位）的高半部分。</p>
+<h3 id="3-4-9-加载-存放"><a href="#3-4-9-加载-存放" class="headerlink" title="3.4.9 加载&#x2F;存放"></a>3.4.9 加载&#x2F;存放</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">ld_i32/i64 t0, t1, offset</span><br><span class="line">ld8s_i32/i64 t0, t1, offset</span><br><span class="line">ld8u_i32/i64 t0, t1, offset</span><br><span class="line">ld16s_i32/i64 t0, t1, offset</span><br><span class="line">ld16u_i32/i64 t0, t1, offset</span><br><span class="line">ld32s_i64 t0, t1, offset</span><br><span class="line">ld32u_i64 t0, t1, offset</span><br></pre></td></tr></table></figure>
+
+<p>t0 &#x3D; read(t1 + offset)<br>从宿主机器内存加载8位，16位，32位或64位带或不带符号扩展名。 偏移量必须为常数。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">st_i32/i64 t0, t1, offset</span><br><span class="line">st8_i32/i64 t0, t1, offset</span><br><span class="line">st16_i32/i64 t0, t1, offset</span><br><span class="line">st32_i64 t0, t1, offset</span><br></pre></td></tr></table></figure>
+
+<p>write(t0, t1 + offset)<br>将8、16、32或64位写入宿主机器内存。</p>
+<p>所有这些操作码均假定指向的主机内存与全局内存不对应。 在后一种情况下，行为是不可预测的。</p>
+<h3 id="3-4-10-多字（multiword）算术"><a href="#3-4-10-多字（multiword）算术" class="headerlink" title="3.4.10 多字（multiword）算术"></a>3.4.10 多字（multiword）算术</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">add2_i32/i64 t0_low, t0_high, t1_low, t1_high, t2_low, t2_high</span><br><span class="line">sub2_i32/i64 t0_low, t0_high, t1_low, t1_high, t2_low, t2_high</span><br></pre></td></tr></table></figure>
+
+<p>与add &#x2F; sub相似，不同之处在于双字输入T1和T2由两个单字参数组成，并且双字输出T0在两个单字输出中返回。</p>
+<p><code>mulu2_i32/i64 t0_low, t0_high, t1, t2</code></p>
+<p>与mul相似，除了两个无符号输入T1和T2产生完整的双字乘积T0。 后者以两个单字输出返回。</p>
+<p><code>muls2_i32/i64 t0_low, t0_high, t1, t2</code></p>
+<p>与mulu2相似，除了两个输入T1和T2是带符号的。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mulsh_i32/i64 t0, t1, t2</span><br><span class="line">muluh_i32/i64 t0, t1, t2</span><br></pre></td></tr></table></figure>
+
+<p>分别提供有符号或无符号乘法的高部分。 如果后端未提供mulu2 &#x2F; muls2，则tcg-op生成器可以获得相同的结果，方法是发出一对操作码mul + muluh &#x2F; mulsh。</p>
+<h3 id="3-4-11-内存屏障"><a href="#3-4-11-内存屏障" class="headerlink" title="3.4.11 内存屏障"></a>3.4.11 内存屏障</h3><p><code>mb &lt;$ arg&gt;</code></p>
+<p>生成target内存屏障指令，以确保由相应的Host内存屏障指令强制执行的内存排序。 后端执行的排序可能比guest要求的排序严格。 它不能更弱。 该操作码采用一个常量参数，该参数是生成适当的屏障指令所必需的。 后端应注意仅在必要时（即，对于SMP来宾和启用MTTCG时）发出目标屏障指令。</p>
+<p>guest翻译器应为所有具有顺序副作用的guest指令生成此操作码。</p>
+<p>请参阅docs &#x2F; devel &#x2F; atomics.txt了解有关内存屏障的更多信息。</p>
+<h3 id="3-4-12-32位宿主机器模拟64位客户机器"><a href="#3-4-12-32位宿主机器模拟64位客户机器" class="headerlink" title="3.4.12 32位宿主机器模拟64位客户机器"></a>3.4.12 32位宿主机器模拟64位客户机器</h3><p>以下操作码是TCG内部的。 因此，它们将由32位主机代码生成器实现，而不由来宾转换器发出。 它们由“ tcg-op.h”中的内联函数根据需要发出。</p>
+<p><code>brcond2_i32 t0_low，t0_high，t1_low，t1_high，cond，label</code></p>
+<p>与brcond相似，不同之处在于64位值T0和T1由两个32位自变量形成。</p>
+<p><code>setcond2_i32 dest，t1_low，t1_high，t2_low，t2_high，cond</code></p>
+<p>与setcond相似，除了64位值T1和T2由两个32位自变量形成。 结果是一个32位值。</p>
+<h3 id="3-4-13-QEMU特定指令"><a href="#3-4-13-QEMU特定指令" class="headerlink" title="3.4.13 QEMU特定指令"></a>3.4.13 QEMU特定指令</h3><p><code>exit_tb t0</code></p>
+<p>退出当前TB，并返回值t0（字类型word type）。</p>
+<p><code>goto_tb index</code></p>
+<p>如果当前TB已链接到该TB，则退出当前TB并跳转到TB索引“index”（常量）。否则，执行下一条指令。只有索引0和1有效，并且每TB每个插槽索引最多只能发布一次tcg_gen_goto_tb。</p>
+<p><code>lookup_and_goto_ptr tb_addr</code></p>
+<p>查找TB地址（’tb_addr’），如果有效，则跳转到该地址。如果无效，请跳至TCG尾声以返回到exec循环。</p>
+<p>此操作是可选的。如果TCG后端未实现goto_ptr操作码，则发出此操作等同于发出exit_tb（0）。</p>
+<p><code>qemu_ld_i32 / i64 t0，t1，flag，memidx</code></p>
+<p><code>qemu_st_i32 / i64 t0，t1，flag，memidx</code></p>
+<p>将guest地址t1的数据加载到t0，或将数据存储在guest地址t1的t0中。 _i32 &#x2F; _i64大小仅适用于输入&#x2F;输出寄存器t0的大小。地址t1始终根据来宾的大小而定，并且存储器操作的宽度由标志控制。</p>
+<p>如果处理32位主机上的64位数量，则t0和t1都可以分成低位序排序的寄存器对。</p>
+<p>memidx选择要使用的qemu tlb索引（例如，用户或内核访问权限）。这些标志是MemOp位，用于选择内存访问的符号，宽度和字节序。</p>
+<p>对于32位主机，保证qemu_ld &#x2F; st_i64仅与标志中指定的64位内存访问。</p>
+<h3 id="宿主机器向量操作"><a href="#宿主机器向量操作" class="headerlink" title="宿主机器向量操作"></a>宿主机器向量操作</h3><p>所有向量操作都有两个参数：<code>TCGOP_VECL</code>和<code>TCGOP_VECE</code>。前者以log2 64位为单位指定向量的长度。后者以log2 8位为单位指定元素的长度（如果适用）。</p>
+<p>例如： <code>VECL = 1-&gt; 64 &lt;&lt; 1-&gt; v128</code>，而<code>VECE = 2-&gt; 1 &lt;&lt; 2-&gt; i32</code>。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mov_vec v0，v1</span><br><span class="line">ld_vec v0，t1</span><br><span class="line">st_vec v0，t1</span><br></pre></td></tr></table></figure>
+
+<p>移动，加载和存储。</p>
+<p><code>dup_vec v0，r1</code></p>
+<p>通过V0将R1的低N位复制到VECL &#x2F; VECE副本中。</p>
+<p><code>dupi_vec v0，c</code></p>
+<p>同样，对于常量。<br>较小的值将由扩展器复制到主机寄存器的大小。</p>
+<p><code>dup2_vec v0，r1，r2</code></p>
+<p>跨V0将r2：r1复制到VECL &#x2F; 64副本中。该操作码仅适用于32位主机。</p>
+<p><code>add_vec v0，v1，v2</code></p>
+<p>v0 &#x3D; v1 + v2，在向量中的元素中。</p>
+<p><code>sub_vec v0，v1，v2</code></p>
+<p>同样，v0 &#x3D; v1-v2。</p>
+<p><code>mul_vec v0，v1，v2</code></p>
+<p>同样，v0 &#x3D; v1 * v2。</p>
+<p><code>neg_vec v0，v1</code></p>
+<p>同样，v0 &#x3D; -v1。</p>
+<p><code>abs_vec v0，v1</code></p>
+<p>同样，v0 &#x3D; v1 &lt;0？ -v1：v1，位于向量中的元素中。</p>
+<p><code>smin_vec：</code></p>
+<p><code>umin_vec：</code></p>
+<p>同样，对于有符号和无符号元素类型，v0 &#x3D; MIN（v1，v2）。</p>
+<p><code>smax_vec：</code></p>
+<p><code>umax_vec：</code></p>
+<p>同样，对于有符号和无符号元素类型，v0 &#x3D; MAX（v1，v2）。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ssadd_vec：</span><br><span class="line">sssub_vec：</span><br><span class="line">usadd_vec：</span><br><span class="line">ussub_vec：</span><br></pre></td></tr></table></figure>
+
+<p>有符号和无符号饱和加法和减法。如果在元素类型内无法表示真实结果，则将元素设置为该类型的最小值或最大值。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">and_vec v0，v1，v2</span><br><span class="line">or_vec v0，v1，v2</span><br><span class="line">xor_vec v0，v1，v2</span><br><span class="line">andc_vec v0，v1，v2</span><br><span class="line">orc_vec v0，v1，v2</span><br><span class="line">not_vec v0，v1</span><br></pre></td></tr></table></figure>
+
+<p>同样，有和没有补码的逻辑运算。请注意，VECE未使用。</p>
+<p><code>shli_vec v0，v1，i2</code></p>
+<p><code>shls_vec v0，v1，s2</code></p>
+<p>将所有元素从v1移至标量i2 &#x2F; s2。即</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span>(i = <span class="number">0</span>; i &lt;VECL / VECE; ++ i)</span><br><span class="line">&#123;</span><br><span class="line">    v0 [i] = v1 [i] &lt;&lt; s2;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">shri_vec v0，v1，i2</span><br><span class="line">sari_vec v0，v1，i2</span><br><span class="line">shrs_vec v0，v1，s2</span><br><span class="line">sars_vec v0，v1，s2</span><br></pre></td></tr></table></figure>
+
+<p>对于逻辑和算术右移也是如此。</p>
+<p><code>shlv_vec v0，v1，v2</code></p>
+<p>将元素从v1移到v2。即</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span>(i = <span class="number">0</span>; i &lt;VECL / VECE; ++ i)</span><br><span class="line">&#123;</span><br><span class="line">    v0 [i] = v1 [i] &lt;&lt; s2;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>shrv_vec v0，v1，v2</code></p>
+<p><code>sarv_vec v0，v1，v2</code></p>
+<p>对于逻辑和算术右移也是如此。</p>
+<p><code>cmp_vec v0，v1，v2，cond</code></p>
+<p>按元素比较向量，将-1表示为true，将0表示为false。</p>
+<p><code>bitsel_vec v0，v1，v2，v3</code></p>
+<p>按位选择，v0 &#x3D;（v2＆v1）| （v3＆〜v1），遍及整个向量。</p>
+<p><code>cmpsel_vec v0，c1，c2，v3，v4，cond</code></p>
+<p>根据比较结果选择元素：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span>(i = <span class="number">0</span>; i &lt;n; ++ i)&#123;</span><br><span class="line">  v0 [i] =（c1 [i] cond c2 [i]）？ v3 [i]：v4 [i]。</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>注意1：</strong>当已知最后一个操作数为常量时，会定义一些快捷方式（例如，addi用于add，movi用于mov）。</p>
+<p><strong>注意2：</strong>使用TCG时，绝不能直接生成操作码，因为其中某些操作码可能无法用作“实际”操作码。 始终使用函数tcg_gen_xxx（args）。</p>
+<h1 id="4-后端"><a href="#4-后端" class="headerlink" title="4. 后端"></a>4. 后端</h1><p>tcg-target.h包含目标特定的定义。 tcg-target.inc.c包含目标特定代码； 它由tcg &#x2F; tcg.c包含，而不是独立的C文件。</p>
+<h2 id="4-1-假设"><a href="#4-1-假设" class="headerlink" title="4.1 假设"></a>4.1 假设</h2><p>目标字大小（TCG_TARGET_REG_BITS）预计为32位或64位。期望指针具有与word相同的大小。</p>
+<p>在32位目标上，所有64位操作都将转换为32位。必须执行一些特定的操作才能允许它（请参阅add2_i32，sub2_i32，brcond2_i32）。</p>
+<p>在64位目标上，使用以下操作在32和64位寄存器之间传输值：</p>
+<ul>
+<li>trunc_shr_i64_i32</li>
+<li>ext_i32_i64</li>
+<li>extu_i32_i64</li>
+</ul>
+<p>它们可确保在将值从32位寄存器移到64位寄存器时正确截断或扩展这些值，反之亦然。请注意，<code>trunc_shr_i64_i32</code>是可选操作。如果满足以下所有条件，则无需实施：</p>
+<ul>
+<li>64位寄存器可以保存32位值</li>
+<li>64位寄存器中的32位值不需要保持零或符号扩展</li>
+<li>所有32位TCG操作都忽略了64位寄存器的高位</li>
+</ul>
+<p>此版本不支持浮点运算。代码生成器的先前版本完全支持它们，但是最好先集中于整数运算。</p>
+<h2 id="4-2-约束条件"><a href="#4-2-约束条件" class="headerlink" title="4.2 约束条件"></a>4.2 约束条件</h2><p>类似于GCC的约束用于定义每条指令的约束。此版本不支持内存限制。别名在输入操作数中与GCC一样指定。</p>
+<p>即使没有显式别名，同一寄存器也可用于输入和输出。如果操作扩展到多个目标指令，则必须注意避免破坏输入值。支持GCC样式的“早期内容early clobber”输出，并带有’＆’。</p>
+<p>目标target可以定义特定的寄存器或常量约束。如果操作使用不允许所有常量的常量输入约束，则它还必须接受寄存器以进行回退。一般将约束“ i”定义为接受任何常数。约束“ r”不是通用定义的，但是每个后端始终使用它来表示所有寄存器。</p>
+<p><code>movi_i32</code>和<code>movi_i64</code>操作必须接受任何常量。</p>
+<p><code>mov_i32</code>和<code>mov_i64</code>操作必须接受任何相同类型的寄存器。</p>
+<p><code>ld / st / sti</code>指令必须接受带符号的32位常量偏移量。这可以通过保留特定寄存器来实现，如果偏移太大，则可以在其中计算地址。</p>
+<p><code>ld / st</code>指令必须接受任何目标（ld）或源（st）寄存器。</p>
+<p>如果sti指令无法存储给定常量，则它可能会失败。</p>
+<h2 id="4-3-函数调用假设"><a href="#4-3-函数调用假设" class="headerlink" title="4.3 函数调用假设"></a>4.3 函数调用假设</h2><ul>
+<li>参数和返回值的唯一支持类型为：32位和64位整数和指针。</li>
+<li>堆栈向下生长。</li>
+<li>前N个参数在寄存器中传递。</li>
+<li>下一个参数通过将它们存储为words在堆栈上传递。</li>
+<li>调用期间某些寄存器被破坏。</li>
+<li>该函数可以在寄存器中返回0或1的值。 在32位目标上，函数必须能够为64位返回类型返回寄存器中的2个值。</li>
+</ul>
+<h1 id="5-建议编码规则"><a href="#5-建议编码规则" class="headerlink" title="5 建议编码规则"></a>5 建议编码规则</h1><ul>
+<li><p>使用全局变量来表示QEMU CPU状态的经常修改的部分，例如整数寄存器和条件代码。 TCG将能够使用宿主机器寄存器来存储它们。</p>
+</li>
+<li><p>避免将全局变量存储在固定寄存器中。它们只能用于存储指向CPU状态的指针，也可以用于存储指向寄存器窗口的指针。</p>
+</li>
+<li><p>使用临时变量。仅在真正需要时使用本地临时变量，例如当您需要在跳转后使用一个值时。本地临时对象在当前TCG实现中带来了性能上的损失：它们的内容在每个基本块的末尾保存到内存中。</p>
+</li>
+<li><p>不再使用的免费临时文件和本地临时文件（tcg_temp_free）。由于tcg_const_x（）还会创建一个临时文件，因此在使用它后应将其释放。释放临时文件不会生成更好的代码，但是会减少TCG的内存使用量和翻译速度。</p>
+</li>
+<li><p>不要为复杂或很少使用的guest指令而使用帮助函数。使用TCG实现guest指令时，使用大约二十多个TCG指令几乎没有性能优势。请注意，这种经验法则更适用于执行复杂逻辑或算术的帮助函数，其中C编译器有能力很好地进行优化。在指令主要执行加载和存储的情况下，它就不那么重要了，在那些情况下，对于较长的序列，内联TCG可能仍然更快。</p>
+</li>
+<li><p>exec-all.h中的MAX_OP_PER_INSTR设置了每个来宾指令可生成的TCG指令数量的硬限制-不能超过此上限，而不会冒缓冲区溢出的风险。</p>
+</li>
+<li><p>如果您知道TCG无法证明给定的全局变量在给定的程序点处“死亡”，则使用“丢弃”指令。 x86 guest虚拟机使用它来改善条件代码的优化。</p>
+</li>
+</ul>
+</div><div><ul class="post-copyright"><li class="post-copyright-author"><strong>本文作者：</strong>ss</li><li class="post-copyright-link"><strong>本文链接：</strong><a href="/2020/02/22/翻译qemu-tcg-介绍/">https://ssdemajia.github.io/2020/02/22/%E7%BF%BB%E8%AF%91qemu-tcg-%E4%BB%8B%E7%BB%8D/</a></li><li class="post-copyright-license"><strong>版权声明：</strong>本站所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/cn/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0 CN</a> 许可协议。转载请注明出处！</li></ul></div><br><div class="tags"></div><div class="post-nav"><a class="pre" href="../../../03/08/%E7%BF%BB%E8%AF%91kernel-address-space-layout-randomization/">翻译 kernel address space layout randomization</a><a class="next" href="../../13/afl%E7%99%BD%E7%9A%AE%E4%B9%A6/">翻译 afl白皮书</a></div><div id="comments"><div id="disqus_thread"><div class="btn_click_load"><button class="disqus_click_btn">阅读评论（请确保 Disqus 可以正常加载）</button></div><script type="text/javascript">var disqus_config = function () {
+    this.page.url = 'https://ssdemajia.github.io/2020/02/22/翻译qemu-tcg-介绍/';
+    this.page.identifier = '2020/02/22/翻译qemu-tcg-介绍/';
+    this.page.title = '翻译 qemu tcg 介绍';
+  };</script><script type="text/javascript" id="disqus-lazy-load-script">$.ajax({
+url: 'https://disqus.com/next/config.json',
+timeout: 2500,
+type: 'GET',
+success: function(){
+  var d = document;
+  var s = d.createElement('script');
+  s.src = '//dowob.disqus.com/embed.js';
+  s.setAttribute('data-timestamp', + new Date());
+  (d.head || d.body).appendChild(s);
+  $('.disqus_click_btn').css('display', 'none');
+},
+error: function() {
+  $('.disqus_click_btn').css('display', 'block');
+}
+});</script><script type="text/javascript" id="disqus-click-load">$('.btn_click_load').click(() => {  //click to load comments
+    (() => { // DON'T EDIT BELOW THIS LINE
+        var d = document;
+        var s = d.createElement('script');
+        s.src = '//dowob.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', + new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+    $('.disqus_click_btn').css('display','none');
+});</script><script type="text/javascript" id="disqus-count-script">$(function() {
+     var xhr = new XMLHttpRequest();
+     xhr.open('GET', '//disqus.com/next/config.json', true);
+     xhr.timeout = 2500;
+     xhr.onreadystatechange = function () {
+       if (xhr.readyState === 4 && xhr.status === 200) {
+         $('.post-meta .post-comments-count').show();
+         var s = document.createElement('script');
+         s.id = 'dsq-count-scr';
+         s.src = 'https://dowob.disqus.com/count.js';
+         s.async = true;
+         (document.head || document.body).appendChild(s);
+       }
+     };
+     xhr.ontimeout = function () { xhr.abort(); };
+     xhr.send(null);
+   });  </script></div></div></div></div></div><div class="pure-u-1 pure-u-md-4"><div id="footer">Copyright © 2024 <a href="../../../../." rel="nofollow">SS.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/ssdemajia"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/ssdemajia"> SS.</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="../../../../js/totop.js?v=0.0.0" async></script><script type="text/javascript" src="../../../../js/codeblock-resizer.js?v=0.0.0"></script><script type="text/javascript" src="../../../../js/smartresize.js?v=0.0.0"></script></div></body></html>

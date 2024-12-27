@@ -1,0 +1,468 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title>萌新的hhkb上手教程 | SS</title><link rel="stylesheet" type="text/css" href="../../../../css/style.css?v=0.0.0"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/normalize/8.0.1/normalize.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/pure-min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/grids-responsive-min.css"><link rel="stylesheet" href="//lib.baomitu.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//lib.baomitu.com/jquery/3.3.1/jquery.min.js"></script><link rel="icon" mask="" sizes="any" href="../../../../favicon.ico"><link rel="Shortcut Icon" type="image/x-icon" href="../../../../favicon.ico"><link rel="apple-touch-icon" href="../../../../apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="../../../../apple-touch-icon.png"><link rel="alternate" type="application/atom+xml" href="../../../../atom.xml"><script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+ga('create','UA-134074056-1','auto');ga('send','pageview');</script><meta name="generator" content="Hexo 7.3.0"></head><body><div class="body_container"><div id="header"><div class="site-name"><a id="logo" href="../../../../.">SS</a><p class="description">不知道在说些什么</p></div><div id="nav-menu"><a class="current" href="../../../../."><i class="fa undefined"> 首页</i></a><a href="../../../../archives/"><i class="fa undefined"> 归档</i></a><a href="../../../../about/"><i class="fa undefined"> 关于</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-4"><div class="content_container"><div class="post"><h1 class="post-title">萌新的hhkb上手教程</h1><div class="post-meta">Mar 27, 2019<span> | </span><span class="category"><a href="../../../../categories/%F0%9F%90%B1%E6%9D%82%E8%B0%88/">🐱杂谈</a></span><script src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script><span id="busuanzi_container_page_pv"> | <span id="busuanzi_value_page_pv"></span><span> 阅读</span></span><span class="post-time"><span class="post-meta-item-text"> | </span><span class="post-meta-item-icon"><i class="fa fa-keyboard-o"></i><span class="post-count"> 2.5k</span><span class="post-meta-item-text"> 字</span></span></span><span class="post-time"> | <span class="post-meta-item-icon"><i class="fa fa-hourglass-half"></i><span class="post-count"> 9</span><span class="post-meta-item-text"> 分钟</span></span></span></div><div class="post-content"><h2 id="hhkb镇贴"><a href="#hhkb镇贴" class="headerlink" title="hhkb镇贴"></a>hhkb镇贴</h2><p>靠着导师发的补贴买了个梦寐以求的hhkb，发现hhkb上手有点难度，特别是没有经常使用vim、emacs的玩家，所以边用着hhkb，边收集了一些教程，用于降低萌新的上手难度。</p>
+<span id="more"></span>
+<p><img src="hhkb.jpg" alt="我的hhkb~"></p>
+<h2 id="方向键"><a href="#方向键" class="headerlink" title="方向键"></a>方向键</h2><p>因为hhkb自带的方向键需要<code>;&#39;[/ + fn</code>使用，但是fn和这几个键都在右手，很是变扭，所以我一般会使用mac的全局快捷键：</p>
+<p><strong>移动：</strong></p>
+<ol>
+<li><code>control + f</code>: ➡️， 右移一个字符，f表示forward（向前）</li>
+<li><code>control + b</code>: ⬅️， 左移一个字符，b表示back（向后）</li>
+<li><code>control + p</code>: 👆， 往上一个字符，也可以是往前移动一个，比如终端里返回上一个命令，p表示previous（之前）</li>
+<li><code>control + n</code>: 👇， 向下一个字符，n表示next（下一个）</li>
+<li><code>control + a</code>: 移动光标到当前行的<strong>开头</strong>，a表示ahead（头部）</li>
+<li><code>control + e</code>: 移动光标到当前行的<strong>末尾</strong>，a表示ahead（头部）</li>
+</ol>
+<p><strong>删除</strong></p>
+<ol>
+<li><code>control + h</code>: 删除光标前一个字符</li>
+<li><code>control + d</code>: 删除光标后一个字符</li>
+<li><code>control + k</code>: 删除光标到行尾的所有字符</li>
+<li><code>control + u</code>: 删除整行</li>
+</ol>
+<h2 id="Vim"><a href="#Vim" class="headerlink" title="Vim"></a>Vim</h2><h3 id="Vim模式"><a href="#Vim模式" class="headerlink" title="Vim模式"></a>Vim模式</h3><p>Vim有三种模式<strong>normal、insert、visual</strong></p>
+<p>默认打开模式是normal</p>
+<ol>
+<li>Normal在这个模式下，按键不能直接将字符插入至文件，而是执行各种命令。</li>
+<li>Insert插入模式，按键的字符是直接插入的。</li>
+<li>visual可视模式，按住鼠标能够直接进行选择</li>
+</ol>
+<p><strong>普通模式切换到插入模式：</strong></p>
+<table>
+<thead>
+<tr>
+<th>按键</th>
+<th>描述</th>
+<th>助记</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>i</td>
+<td>在当前光标字符前插入</td>
+<td>insert</td>
+</tr>
+<tr>
+<td>a</td>
+<td>在当前光标字符后插入</td>
+<td>append</td>
+</tr>
+<tr>
+<td>I</td>
+<td>在当前行首插入</td>
+<td>Insert</td>
+</tr>
+<tr>
+<td>A</td>
+<td>在当前行尾插入</td>
+<td>Append</td>
+</tr>
+<tr>
+<td>o</td>
+<td>在下方开一新行，再插入</td>
+<td>open</td>
+</tr>
+<tr>
+<td>O</td>
+<td>在上方开一新行，插入</td>
+<td>Open</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody></table>
+<p><strong>普通模式切换到可视模式：</strong></p>
+<table>
+<thead>
+<tr>
+<th>按键</th>
+<th>描述</th>
+<th>助记</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>v</td>
+<td>选中当前光标字符，并进入可视模式</td>
+<td>visual</td>
+</tr>
+<tr>
+<td>V</td>
+<td>不同于小写 v，这时移动光标只会按行选择</td>
+<td>Visual</td>
+</tr>
+<tr>
+<td><Ctrl-v></td>
+<td>块选择模式，此时移动光标会选择一个矩形块</td>
+<td></td>
+</tr>
+</tbody></table>
+<p><strong>可视模式切换到输入模式：</strong></p>
+<table>
+<thead>
+<tr>
+<th>按键</th>
+<th>描述</th>
+<th>助记</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>s</td>
+<td>删除当前已选择的内容，并进入插入模式</td>
+<td></td>
+</tr>
+<tr>
+<td>c</td>
+<td>删除当前已选择的内容，并进入插入模式</td>
+<td>change</td>
+</tr>
+<tr>
+<td>di</td>
+<td>删除当前已选择的内容，并进入插入模式</td>
+<td></td>
+</tr>
+</tbody></table>
+<p><strong>可视模式到普通模式：</strong></p>
+<table>
+<thead>
+<tr>
+<th>按键</th>
+<th>描述</th>
+<th>助记</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>y</td>
+<td>复制当前选择区域，并退出可视模式</td>
+<td>yank</td>
+</tr>
+<tr>
+<td>Y</td>
+<td>复制当前选择区域（按行），并退出可视模式</td>
+<td>Yank</td>
+</tr>
+</tbody></table>
+<h3 id="Normal模式"><a href="#Normal模式" class="headerlink" title="Normal模式"></a>Normal模式</h3><p><strong>常用命令</strong></p>
+<table>
+<thead>
+<tr>
+<th>按键</th>
+<th>描述</th>
+<th>助记</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>p</td>
+<td>粘贴于当前光标之后</td>
+<td>paste&#x2F;put</td>
+</tr>
+<tr>
+<td>P</td>
+<td>粘贴于当前光标之前</td>
+<td>Paste&#x2F;Put</td>
+</tr>
+<tr>
+<td>x</td>
+<td>删除当前字符，相当于 dl</td>
+<td></td>
+</tr>
+<tr>
+<td>s</td>
+<td>删除当前字符并插入，相当于 cl</td>
+<td></td>
+</tr>
+<tr>
+<td>C</td>
+<td>删除至行尾并插入，相当于 c$</td>
+<td></td>
+</tr>
+<tr>
+<td>D</td>
+<td>删除至行尾</td>
+<td></td>
+</tr>
+<tr>
+<td>S</td>
+<td>从当前行首个非空字符删除至行尾并插入，相当于 ^C</td>
+<td></td>
+</tr>
+<tr>
+<td>u</td>
+<td>撤销上一次修改	undo</td>
+<td></td>
+</tr>
+<tr>
+<td><Ctrl-r></td>
+<td>重做上一次修改，u 的逆过程</td>
+<td>redo</td>
+</tr>
+<tr>
+<td>.</td>
+<td>在当前光标处重复上一次修改</td>
+<td></td>
+</tr>
+<tr>
+<td>r</td>
+<td>替代字符，将当前字符替代为紧跟着输入的字符</td>
+<td>replace</td>
+</tr>
+<tr>
+<td>R</td>
+<td>进入替代模式，将当前及之后的字符都替代为紧跟着输入的字符串，直到按 <Esc> 返回 Normal 模式</td>
+<td>Replace</td>
+</tr>
+</tbody></table>
+<h3 id="移动命令"><a href="#移动命令" class="headerlink" title="移动命令"></a>移动命令</h3><p><strong>每次移动一个字一行</strong></p>
+<table>
+<thead>
+<tr>
+<th>按键</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>h</td>
+<td>光标左移</td>
+</tr>
+<tr>
+<td>j</td>
+<td>光标下移</td>
+</tr>
+<tr>
+<td>k</td>
+<td>光标上移</td>
+</tr>
+<tr>
+<td>l</td>
+<td>光标右移</td>
+</tr>
+</tbody></table>
+<p><strong>使用数字加移动命令来实现一次移动多个字符</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>按键</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>n+h</td>
+<td>光标左移 n 个位置 ，n(umber) 指数字</td>
+</tr>
+<tr>
+<td>n+j</td>
+<td>光标下移 n 个位置 ，n(umber) 指数字</td>
+</tr>
+<tr>
+<td>n+k</td>
+<td>光标上移 n 个位置 ，n(umber) 指数字</td>
+</tr>
+<tr>
+<td>n+l</td>
+<td>光标右移 n 个位置 ，n(umber) 指数字</td>
+</tr>
+</tbody></table>
+<p><strong>其他的常见移动光标命令：</strong></p>
+<table>
+<thead>
+<tr>
+<th>按键</th>
+<th>描述</th>
+<th>助记</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0</td>
+<td>跳到行首，可以理解为无穷大的h</td>
+<td></td>
+</tr>
+<tr>
+<td>^</td>
+<td>跳到行首开始的第一个非空白字符</td>
+<td></td>
+</tr>
+<tr>
+<td>$</td>
+<td>跳到行尾，可以理解为无穷大的l</td>
+<td></td>
+</tr>
+<tr>
+<td>gg</td>
+<td>跳到首行，可以理解为无穷大的k</td>
+<td></td>
+</tr>
+<tr>
+<td>G</td>
+<td>跳到末行，可以理解为无穷大的j</td>
+<td></td>
+</tr>
+<tr>
+<td>w</td>
+<td>跳到下一个词首</td>
+<td>word</td>
+</tr>
+<tr>
+<td>b</td>
+<td>跳到上一个词首</td>
+<td>back-word</td>
+</tr>
+<tr>
+<td>e</td>
+<td>跳到下一个词尾</td>
+<td>end</td>
+</tr>
+<tr>
+<td>ge</td>
+<td>跳到上一个词尾</td>
+<td></td>
+</tr>
+</tbody></table>
+<p>数字+移动命令都可以使用，比如5w表示移动5个单词</p>
+<h3 id="操作命令"><a href="#操作命令" class="headerlink" title="操作命令"></a>操作命令</h3><p><strong>删除、修改、复制等</strong></p>
+<table>
+<thead>
+<tr>
+<th>按键</th>
+<th>描述</th>
+<th>助记</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>c</td>
+<td>删除，并进入插入模式，删除单词</td>
+<td>change</td>
+</tr>
+<tr>
+<td>d</td>
+<td>删除</td>
+<td>delete</td>
+</tr>
+<tr>
+<td>y</td>
+<td>复制</td>
+<td>yank</td>
+</tr>
+<tr>
+<td>gu</td>
+<td>变为小写字母</td>
+<td></td>
+</tr>
+<tr>
+<td>gU</td>
+<td>变为大写字母</td>
+<td></td>
+</tr>
+<tr>
+<td>g~</td>
+<td>颠倒字母的大小写</td>
+<td></td>
+</tr>
+<tr>
+<td>&gt;</td>
+<td>右缩进</td>
+<td></td>
+</tr>
+<tr>
+<td>&lt;</td>
+<td>左缩进</td>
+<td></td>
+</tr>
+<tr>
+<td>&#x3D;</td>
+<td>自动缩进</td>
+<td></td>
+</tr>
+</tbody></table>
+<p><strong>移动命令+操作命令</strong></p>
+<p>dl：向右删除一个字符（删除当下字符，右侧字符不会被删）；</p>
+<p>dh：向左删除一个字符（删除左侧字符，当下字符不会被删）；</p>
+<p>d3l：向右删除 3 个字符（3dl 亦有相同效果，下同）；<br>d3w：删除文本至右侧第三个词首之前；<br>de：删除当下字符至下一个词尾；<br>y2w：复制当下位置至右侧第二个词首之间的文本；<br>gUe：将当下字符至下一个词尾变成大写；<br>行操作：连续两次操作命令</p>
+<p>按键	描述<br>cc	删除整行，并进入 insert （插入）模式<br>dd	删除整行<br>yy	复制整行<br>guu&#x2F;gugu	整行变为小写字母<br>gUU&#x2F;gUgU	整行变为大写字母<br>g~~&#x2F;g<del>g</del>	颠倒整行字母的大小写<br><code>&gt;&gt;</code>       行右缩进<br>&lt;&lt;	行左缩进<br>&#x3D;&#x3D;	行自动缩进<br>Visual模式<br>可视模式下，不再需要指定移动多少来进行操作，直接选取后按下操作符就行</p>
+<h3 id="分割布局"><a href="#分割布局" class="headerlink" title="分割布局"></a>分割布局</h3><p>使用<code>:sv &lt;filename&gt;</code>命令打开一个文件，这样是纵向分割，新文件会在下方打开，<code>:vs &lt;filename&gt;</code>命令横向分割，新文件在右边打开</p>
+<p>在.vimrc里输入</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">set splitbelow</span><br><span class="line">set splitright</span><br><span class="line">&quot;split navigations</span><br><span class="line">nnoremap &lt;C-J&gt; &lt;C-W&gt;&lt;C-J&gt;  &quot; normal remap 对normal模式下的键位进行重映射</span><br><span class="line">nnoremap &lt;C-K&gt; &lt;C-W&gt;&lt;C-K&gt;</span><br><span class="line">nnoremap &lt;C-L&gt; &lt;C-W&gt;&lt;C-L&gt;</span><br><span class="line">nnoremap &lt;C-H&gt; &lt;C-W&gt;&lt;C-H&gt;</span><br></pre></td></tr></table></figure>
+
+<h3 id="访问缓冲区"><a href="#访问缓冲区" class="headerlink" title="访问缓冲区"></a>访问缓冲区</h3><p>缓冲区保存最近使用的文件，:b <buffer name or number>切换到最近使用的缓冲区</p>
+<h3 id="代码折叠"><a href="#代码折叠" class="headerlink" title="代码折叠"></a>代码折叠</h3><p>在.vimrc里输入</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&quot; Enable folding</span><br><span class="line">set foldmethod=indent</span><br><span class="line">set foldlevel=99</span><br></pre></td></tr></table></figure>
+
+
+<p>这样就可以输入za来启用折叠代码，或者用下面的快捷键</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&quot; Enable folding with the spacebar</span><br><span class="line">nnoremap &lt;space&gt; za</span><br></pre></td></tr></table></figure>
+
+<h3 id="我自己经常用的命令"><a href="#我自己经常用的命令" class="headerlink" title="我自己经常用的命令"></a>我自己经常用的命令</h3><p>跳转，经常使用vim查看日志，需要跳转到最后一行，原来vim是有这个快捷键的，shift+g：跳转到最后一行，gg：跳转到第一行</p>
+<h3 id="cVim"><a href="#cVim" class="headerlink" title="cVim"></a>cVim</h3><p>cVim是chrome浏览器里的vim扩展</p>
+<p><strong>常用快捷键：</strong><br>j ： 网页向下滚动</p>
+<p>k：网页向上滚动</p>
+<p>d： 网页向下滚动半屏</p>
+<p>e：网页想上滚动半屏</p>
+<p>G：网页滚动到底部</p>
+<p>gg ： 网页滚动到顶部</p>
+<p>r：刷新页面</p>
+<p>cr : 刷新出当前页面外的其他页面</p>
+<p>x：关闭当前标签</p>
+<p>X：打开刚刚关闭的标签</p>
+<p>&lt;和&gt;：向前或者向后移动当前标签（需要shift，capslock不好使）</p>
+<p>g0：使得第一个标签变为活动标签</p>
+<p>g$：使得最后一个标签变为活动标签</p>
+<p>f：用大写字母在网页中标出所有链接，输入框。当输入对应的字母时（此时不区分大小写）打开链接或者使输入框获得焦点。</p>
+<h2 id="Tmux"><a href="#Tmux" class="headerlink" title="Tmux"></a>Tmux</h2><p>在mac上使用<code>brew install tmux</code>安装</p>
+<h3 id="Tmux-快捷键-速查表"><a href="#Tmux-快捷键-速查表" class="headerlink" title="Tmux 快捷键 &amp; 速查表"></a>Tmux 快捷键 &amp; 速查表</h3><p><strong>Tmux启动相关命令：</strong></p>
+<p>启动新会话：<code>tmux [new -s 会话名 -n 窗口名]</code><br>恢复会话：<code>tmux at [-t 会话名]</code><br>列出所有会话：<code>tmux ls</code><br>关闭会话：<code>tmux kill-session -t 会话名</code><br>关闭所有会话：<br><code>tmux ls | grep : | cut -d. -f1 | awk &#39;&#123;print substr($1, 0, length($1)-1)&#125;&#39; | xargs kill</code></p>
+<p><strong>Tmux前缀相关命令</strong><br>在 Tmux 中，按下 Tmux 前缀：<code> ctrl+b</code>，然后输入：<br><strong>1. 会话</strong></p>
+<p>:new&lt;回车&gt; 启动新会话<br>s 列出所有会话<br>$ 重命名当前会话<br><strong>2.窗口 (标签页)</strong></p>
+<p>c 创建新窗口<br>w 列出所有窗口<br>n 后一个窗口<br>p 前一个窗口<br>f 查找窗口<br>, 重命名当前窗口<br>&amp; 关闭当前窗口</p>
+<h3 id="调整窗口排序"><a href="#调整窗口排序" class="headerlink" title="调整窗口排序"></a>调整窗口排序</h3><p><code>swap-window -s 3 -t 1</code> 交换 3 号和 1 号窗口<br><code>swap-window -t 1</code> 交换当前和 1 号窗口<br><code>move-window -t 1</code> 移动当前窗口到 1 号</p>
+<h3 id="窗格（分割窗口）"><a href="#窗格（分割窗口）" class="headerlink" title="窗格（分割窗口）"></a>窗格（分割窗口）</h3><p>%  垂直分割<br>“  水平分割<br>o  交换窗格<br>x  关闭窗格<br>⍽  左边这个符号代表空格键 - 切换布局<br>q 显示每个窗格是第几个，当数字出现的时候按数字几就选中第几个窗格<br>{ 与上一个窗格交换位置<br>} 与下一个窗格交换位置<br>z 切换窗格最大化&#x2F;最小化</p>
+<h3 id="同步窗格"><a href="#同步窗格" class="headerlink" title="同步窗格"></a>同步窗格</h3><p>这么做可以切换到想要的窗口，输入 Tmux 前缀和一个冒号呼出命令提示行，然后输入：</p>
+<p><code>:setw synchronize-panes</code><br>你可以指定开或关，否则重复执行命令会在两者间切换。<br>这个选项值针对某个窗口有效，不会影响别的会话和窗口。<br>完事儿之后再次执行命令来关闭。<a href="https://sanctum.geek.nz/arabesque/sync-tmux-panes/">帮助</a></p>
+<h3 id="调整窗格尺寸"><a href="#调整窗格尺寸" class="headerlink" title="调整窗格尺寸"></a>调整窗格尺寸</h3><p>如果你不喜欢默认布局，可以重调窗格的尺寸。虽然这很容易实现，但一般不需要这么干。这几个命令用来调整窗格：</p>
+<p>PREFIX : resize-pane -D          当前窗格向下扩大 1 格<br>PREFIX : resize-pane -U          当前窗格向上扩大 1 格<br>PREFIX : resize-pane -L          当前窗格向左扩大 1 格<br>PREFIX : resize-pane -R          当前窗格向右扩大 1 格<br>PREFIX : resize-pane -D 20       当前窗格向下扩大 20 格<br>PREFIX : resize-pane -t 2 -L 20  编号为 2 的窗格向左扩大 20 格</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://blog.mojijs.com/post/150.html">Chrome vim扩展 之 cVim 插件 键盘党的利器</a><br><a href="https://github.com/vim-china/hello-vim/blob/master/quick-start-guide.md">vim入门教程</a><br><a href="https://realpython.com/vim-and-python-a-match-made-in-heaven/">配置python环境</a><br><a href="https://gist.github.com/ryerh/14b7c24dfd623ef8edc7">Tmux 快捷键 &amp; 速查表</a></p>
+</div><div><ul class="post-copyright"><li class="post-copyright-author"><strong>本文作者：</strong>ss</li><li class="post-copyright-link"><strong>本文链接：</strong><a href="/2019/03/27/萌新的hhkb上手教程/">https://ssdemajia.github.io/2019/03/27/%E8%90%8C%E6%96%B0%E7%9A%84hhkb%E4%B8%8A%E6%89%8B%E6%95%99%E7%A8%8B/</a></li><li class="post-copyright-license"><strong>版权声明：</strong>本站所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/cn/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0 CN</a> 许可协议。转载请注明出处！</li></ul></div><br><div class="tags"><a href="../../../../tags/hhkb/">hhkb</a></div><div class="post-nav"><a class="pre" href="../../../04/12/Leetcode-Buy-and-Sell-Stock/">Leetcode Best Time Buy and Sell Stock</a><a class="next" href="../../19/vue%E9%A1%B9%E7%9B%AEwebpack%E9%85%8D%E7%BD%AE/">vue项目webpack配置</a></div><div id="comments"><div id="disqus_thread"><div class="btn_click_load"><button class="disqus_click_btn">阅读评论（请确保 Disqus 可以正常加载）</button></div><script type="text/javascript">var disqus_config = function () {
+    this.page.url = 'https://ssdemajia.github.io/2019/03/27/萌新的hhkb上手教程/';
+    this.page.identifier = '2019/03/27/萌新的hhkb上手教程/';
+    this.page.title = '萌新的hhkb上手教程';
+  };</script><script type="text/javascript" id="disqus-lazy-load-script">$.ajax({
+url: 'https://disqus.com/next/config.json',
+timeout: 2500,
+type: 'GET',
+success: function(){
+  var d = document;
+  var s = d.createElement('script');
+  s.src = '//dowob.disqus.com/embed.js';
+  s.setAttribute('data-timestamp', + new Date());
+  (d.head || d.body).appendChild(s);
+  $('.disqus_click_btn').css('display', 'none');
+},
+error: function() {
+  $('.disqus_click_btn').css('display', 'block');
+}
+});</script><script type="text/javascript" id="disqus-click-load">$('.btn_click_load').click(() => {  //click to load comments
+    (() => { // DON'T EDIT BELOW THIS LINE
+        var d = document;
+        var s = d.createElement('script');
+        s.src = '//dowob.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', + new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+    $('.disqus_click_btn').css('display','none');
+});</script><script type="text/javascript" id="disqus-count-script">$(function() {
+     var xhr = new XMLHttpRequest();
+     xhr.open('GET', '//disqus.com/next/config.json', true);
+     xhr.timeout = 2500;
+     xhr.onreadystatechange = function () {
+       if (xhr.readyState === 4 && xhr.status === 200) {
+         $('.post-meta .post-comments-count').show();
+         var s = document.createElement('script');
+         s.id = 'dsq-count-scr';
+         s.src = 'https://dowob.disqus.com/count.js';
+         s.async = true;
+         (document.head || document.body).appendChild(s);
+       }
+     };
+     xhr.ontimeout = function () { xhr.abort(); };
+     xhr.send(null);
+   });  </script></div></div></div></div></div><div class="pure-u-1 pure-u-md-4"><div id="footer">Copyright © 2024 <a href="../../../../." rel="nofollow">SS.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/ssdemajia"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/ssdemajia"> SS.</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="../../../../js/totop.js?v=0.0.0" async></script><script type="text/javascript" src="../../../../js/codeblock-resizer.js?v=0.0.0"></script><script type="text/javascript" src="../../../../js/smartresize.js?v=0.0.0"></script></div></body></html>

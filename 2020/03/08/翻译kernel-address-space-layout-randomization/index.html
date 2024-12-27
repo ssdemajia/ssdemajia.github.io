@@ -1,0 +1,70 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title>翻译 kernel address space layout randomization | SS</title><link rel="stylesheet" type="text/css" href="../../../../css/style.css?v=0.0.0"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/normalize/8.0.1/normalize.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/pure-min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/grids-responsive-min.css"><link rel="stylesheet" href="//lib.baomitu.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//lib.baomitu.com/jquery/3.3.1/jquery.min.js"></script><link rel="icon" mask="" sizes="any" href="../../../../favicon.ico"><link rel="Shortcut Icon" type="image/x-icon" href="../../../../favicon.ico"><link rel="apple-touch-icon" href="../../../../apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="../../../../apple-touch-icon.png"><link rel="alternate" type="application/atom+xml" href="../../../../atom.xml"><script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+ga('create','UA-134074056-1','auto');ga('send','pageview');</script><meta name="generator" content="Hexo 7.3.0"></head><body><div class="body_container"><div id="header"><div class="site-name"><a id="logo" href="../../../../.">SS</a><p class="description">不知道在说些什么</p></div><div id="nav-menu"><a class="current" href="../../../../."><i class="fa undefined"> 首页</i></a><a href="../../../../archives/"><i class="fa undefined"> 归档</i></a><a href="../../../../about/"><i class="fa undefined"> 关于</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-4"><div class="content_container"><div class="post"><h1 class="post-title">翻译 kernel address space layout randomization</h1><div class="post-meta">Mar 8, 2020<script src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script><span id="busuanzi_container_page_pv"> | <span id="busuanzi_value_page_pv"></span><span> 阅读</span></span><span class="post-time"><span class="post-meta-item-text"> | </span><span class="post-meta-item-icon"><i class="fa fa-keyboard-o"></i><span class="post-count"> 1.8k</span><span class="post-meta-item-text"> 字</span></span></span><span class="post-time"> | <span class="post-meta-item-icon"><i class="fa fa-hourglass-half"></i><span class="post-count"> 6</span><span class="post-meta-item-text"> 分钟</span></span></span></div><div class="post-content"><p>原文 <a href="https://lwn.net/Articles/569635/">https://lwn.net/Articles/569635/</a><br>配套ppt <a href="http://selinuxproject.org/~jmorris/lss2013_slides/cook_kaslr.pdf">http://selinuxproject.org/~jmorris/lss2013_slides/cook_kaslr.pdf</a></p>
+<h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><p>地址空间布局随机化（ASLR,Address-space layout randomization）是一种常见的技术，它将各种对象随机的放置在内存中，而不是使用固定地址，它使得被漏洞利用更加困难。在Linux系统中广泛在用户空间程序中使用ASLR，Kees Cook想将这个技术应用于Kernel中。在4月他提交了这个技术的代码。这份代码基于2011年Dan Rosenberg的提案。</p>
+<h2 id="攻击"><a href="#攻击" class="headerlink" title="攻击"></a>攻击</h2><p>这里有一种经典的数据结构用于向内核攻击。一个攻击者需要通过阅读内核代码、留意内核补丁或查看CVE来找到内核bug。攻击者使用这个bug来插入恶意代码到内核地址空间，使得内核执行到恶意代码中。下面的两个函数是一种简单的获取内核root权限的方式：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">commit_creds(prepare_creds())</span><br></pre></td></tr></table></figure>
+<p>这些函数的存在使得攻击“对攻击者来说绝对容易”，一旦运行了恶意代码，该漏洞利用便会自行清除。例如,Rosenberg的RDS协议<a href="http://www.exploit-db.com/exploits/15285/">本地提权漏洞</a>。</p>
+<p>这些类型的漏洞依赖内核地址空间中那些有趣的符号地址。这些符号地址在内核版本和发行版本中改变，但是在特定内核中是已知的（或是可以找到的）。ASLR技术破坏了这个过程，并给攻击增加了一层难度。</p>
+<p>ASLR技术在用户空间中将栈、mmap区域、堆、代码区放置在随机区域。攻击必须依靠信息泄露才能绕过ASLR。通过利用其他bug漏洞，攻击者可以找到关注的有趣代码被加载的地址。</p>
+<h2 id="内核地址随机化"><a href="#内核地址随机化" class="headerlink" title="内核地址随机化"></a>内核地址随机化</h2><p>Cook的内核ASLR（KASLR）目前只会对内核代码(text)在启动时进行随机化。KASLR从某些地方开始，未来也将对其他区域进行随机化。</p>
+<p>KASLR有许多好处。副作用是将中断描述表（IDT）从内核的其他部分移动到只读内存区域。非特权的SIDT指令可用于获取IDT位置，该IDT之前可用于确定内核代码的位置。因为IDT在其他地方，所以不能以这种方式使用它，当是它是只读的所以可以防止覆盖。</p>
+<p>KASLR是一种”统计式防守”，因为使用暴力方法可以打破它。假设感兴趣的目标可能出现在1000个地方，那么暴力法会失败999次，成功一次。在用户空间这种错误会导致程序崩溃，但不会引起999台电脑崩溃。后者是对KASLR的错误暴力猜测法的后果。</p>
+<p>另一方面，KASLR与休眠（即挂起磁盘）不兼容。这是一个可解决的问题。另一个问题是内核代码可以移动的空间容量。由于页表限制，代码必须2M对齐，那么可用空间为2G。在“理想世界”中，该位置提供1024个槽。在现实世界中，事实证明它更少。</p>
+<p>我们需要使用一些步骤来防止信息泄露，这些信息会被用来确定内核加载地址。我们应该启用<code>kprt_restrict</code>sysctl，这样内核指针将不会被泄露至用户空间。同样的<code>dmesg_restrict</code>应该被启用，dmesg常常用于定位信息。同样日志文件（比如<code>/var/log/messages</code>）应该设置root用户访问权限。</p>
+<p>最后一个泄露资源理论上很容易修复，但是被网络子系统的维护人员抵制。<code>INET_DIAG</code>套接字API使用内核对象地址做为句柄。这个地址对与用户空间来说是不透明的，但是这是一个真正的内核指针，因此可以用来确定内核地址。将其改为某些混淆值可以解决这个问题。</p>
+<p>在一个完全不受限制的系统中，尤其是具有本地不受信任用户系统中，KASLR不会很有用。但是在使用容器或大量进程的系统上，KASLR很有用。比如Chrome浏览器中的渲染进程使用seccomp-BPF沙箱，限制漏洞利用获取所需信息。同时防止远程服务进行攻击，因为远程服务很少有信息泄露。</p>
+<h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2><p>KASLR已经被添加至ChromeOS中。它在发行版内核的Git树中，并将很快在稳定版本中推出。 Cook笑着说，他以“为那些不一定想要的人带来破坏性的安全变更”而闻名，但是，KASLR实际上是他提出的变更最少的问题。 造成这种情况的部分原因是“其他一些非常聪明的人”提供了帮助，其中包括Rosenberg，其他Google开发人员以及内核邮件列表中的人员。</p>
+<p>Cook的补丁修改了boot过程，从而确定放置内核的最小安全地址。它会使用<a href="https://en.wikipedia.org/wiki/E820">e820</a>工具提供的内存区域计算内核可以使用的插槽，然后用最佳随机数源选择一个插槽。根据系统不同，可能使用<code>rdrand</code>指令、<code>rdtsc</code>（时间戳计数器，timestamp counter）指令中的低位、计时器I&#x2F;O端口位。之后这个补丁会解压缩内核、处理重定位，然后启动内核。</p>
+<p>这些补丁目前只适用于64位x86，尽管Cook计划接下来研究ARM，但是他对ARM知之甚少，所以他希望有人帮他。</p>
+<p>内核虚拟地址空间当前的布局只为内核代码保留512M空间，为模块保留1.5G的空间。由于不需要那么多模块空间，因此补丁将其减少到1G，为内核留出1G空间，因此有512个可能的插槽（因为插槽需要2M对齐）。将模块位置添加到KASLR时，插槽数可能会增加。</p>
+<p>接下来时三个虚拟机的演示，其中一个运行“Stock”内核（固定内核加载地址）和两个KASLR内核。查看每个上的<code>/proc/kallsyms</code>和<code>/sys/kernel/debug/kernel_page_tables</code>会发现不同的地址值。Cook表示，他没有发现启用KASLR对性能引起可衡量的影响。</p>
+<p>地址上的差异使得Panic难以解码，因此用于定位内核插槽的偏移被添加到Panic时的输出。Cook强调，对于启用KASLR的系统，信息泄露将成为一个更大的问题，并指出它与Secure Boot相似，区别于root和kernel ring0。在大多数情况中，开发人员并不关心内核信息泄露，这需要改进。</p>
+<p>Cook说，开发人员可以采取一些更简单的步骤用于避免泄露内核地址，使用<code>&quot;%pK&quot;</code>格式打印地址普通用户将显示地址为0，而root用户仍然可以看到真实地址（如果启用了<code>kptr_restrict</code>,否则每个人都可以看到真实地址）。<code>dmesg</code>使用<code>dmesg_restrict</code>保护，内核不应该使用地址作为句柄。所有的这些技术使得KASLR至少在有限的环境中成为阻止攻击的有效技术。</p>
+</div><div><ul class="post-copyright"><li class="post-copyright-author"><strong>本文作者：</strong>ss</li><li class="post-copyright-link"><strong>本文链接：</strong><a href="/2020/03/08/翻译kernel-address-space-layout-randomization/">https://ssdemajia.github.io/2020/03/08/%E7%BF%BB%E8%AF%91kernel-address-space-layout-randomization/</a></li><li class="post-copyright-license"><strong>版权声明：</strong>本站所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/cn/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0 CN</a> 许可协议。转载请注明出处！</li></ul></div><br><div class="tags"></div><div class="post-nav"><a class="pre" href="../../../../2024/12/26/TextureStreaming%E5%88%86%E6%9E%90/">UE4 TextureStreaming分析</a><a class="next" href="../../../02/22/%E7%BF%BB%E8%AF%91qemu-tcg-%E4%BB%8B%E7%BB%8D/">翻译 qemu tcg 介绍</a></div><div id="comments"><div id="disqus_thread"><div class="btn_click_load"><button class="disqus_click_btn">阅读评论（请确保 Disqus 可以正常加载）</button></div><script type="text/javascript">var disqus_config = function () {
+    this.page.url = 'https://ssdemajia.github.io/2020/03/08/翻译kernel-address-space-layout-randomization/';
+    this.page.identifier = '2020/03/08/翻译kernel-address-space-layout-randomization/';
+    this.page.title = '翻译 kernel address space layout randomization';
+  };</script><script type="text/javascript" id="disqus-lazy-load-script">$.ajax({
+url: 'https://disqus.com/next/config.json',
+timeout: 2500,
+type: 'GET',
+success: function(){
+  var d = document;
+  var s = d.createElement('script');
+  s.src = '//dowob.disqus.com/embed.js';
+  s.setAttribute('data-timestamp', + new Date());
+  (d.head || d.body).appendChild(s);
+  $('.disqus_click_btn').css('display', 'none');
+},
+error: function() {
+  $('.disqus_click_btn').css('display', 'block');
+}
+});</script><script type="text/javascript" id="disqus-click-load">$('.btn_click_load').click(() => {  //click to load comments
+    (() => { // DON'T EDIT BELOW THIS LINE
+        var d = document;
+        var s = d.createElement('script');
+        s.src = '//dowob.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', + new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+    $('.disqus_click_btn').css('display','none');
+});</script><script type="text/javascript" id="disqus-count-script">$(function() {
+     var xhr = new XMLHttpRequest();
+     xhr.open('GET', '//disqus.com/next/config.json', true);
+     xhr.timeout = 2500;
+     xhr.onreadystatechange = function () {
+       if (xhr.readyState === 4 && xhr.status === 200) {
+         $('.post-meta .post-comments-count').show();
+         var s = document.createElement('script');
+         s.id = 'dsq-count-scr';
+         s.src = 'https://dowob.disqus.com/count.js';
+         s.async = true;
+         (document.head || document.body).appendChild(s);
+       }
+     };
+     xhr.ontimeout = function () { xhr.abort(); };
+     xhr.send(null);
+   });  </script></div></div></div></div></div><div class="pure-u-1 pure-u-md-4"><div id="footer">Copyright © 2024 <a href="../../../../." rel="nofollow">SS.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/ssdemajia"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/ssdemajia"> SS.</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="../../../../js/totop.js?v=0.0.0" async></script><script type="text/javascript" src="../../../../js/codeblock-resizer.js?v=0.0.0"></script><script type="text/javascript" src="../../../../js/smartresize.js?v=0.0.0"></script></div></body></html>

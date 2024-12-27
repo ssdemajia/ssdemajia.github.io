@@ -1,0 +1,81 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title>实验吧 whatamitoyou | SS</title><link rel="stylesheet" type="text/css" href="../../../../css/style.css?v=0.0.0"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/normalize/8.0.1/normalize.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/pure-min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/grids-responsive-min.css"><link rel="stylesheet" href="//lib.baomitu.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//lib.baomitu.com/jquery/3.3.1/jquery.min.js"></script><link rel="icon" mask="" sizes="any" href="../../../../favicon.ico"><link rel="Shortcut Icon" type="image/x-icon" href="../../../../favicon.ico"><link rel="apple-touch-icon" href="../../../../apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="../../../../apple-touch-icon.png"><link rel="alternate" type="application/atom+xml" href="../../../../atom.xml"><script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+ga('create','UA-134074056-1','auto');ga('send','pageview');</script><meta name="generator" content="Hexo 7.3.0"></head><body><div class="body_container"><div id="header"><div class="site-name"><a id="logo" href="../../../../.">SS</a><p class="description">不知道在说些什么</p></div><div id="nav-menu"><a class="current" href="../../../../."><i class="fa undefined"> 首页</i></a><a href="../../../../archives/"><i class="fa undefined"> 归档</i></a><a href="../../../../about/"><i class="fa undefined"> 关于</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-4"><div class="content_container"><div class="post"><h1 class="post-title">实验吧 whatamitoyou</h1><div class="post-meta">Jul 24, 2019<span> | </span><span class="category"><a href="../../../../categories/%F0%9F%94%92%E5%AE%89%E5%85%A8/">🔒安全</a></span><script src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script><span id="busuanzi_container_page_pv"> | <span id="busuanzi_value_page_pv"></span><span> 阅读</span></span><span class="post-time"><span class="post-meta-item-text"> | </span><span class="post-meta-item-icon"><i class="fa fa-keyboard-o"></i><span class="post-count"> 1.3k</span><span class="post-meta-item-text"> 字</span></span></span><span class="post-time"> | <span class="post-meta-item-icon"><i class="fa fa-hourglass-half"></i><span class="post-count"> 5</span><span class="post-meta-item-text"> 分钟</span></span></span></div><div class="post-content"><p>听说ctf挺好玩，刚好最近在看汇编，上实验吧找到了这道题，上手这道题的时候一脸懵逼，只有一个whatamitoyou的文件，在macOS下发现无法运行，然后放到虚拟机ubuntu中运行，显示<code>segment fault</code></p>
+<span id="more"></span>
+
+<p><img src="segmentfault.png" alt="直接运行的图"></p>
+<p>我想要不直接放ida pro里跑跑吧，使用ida pro的反编译功能（在函数上按下F5）得到下面的伪代码。下面的代码是main函数中前部的代码，可以看到很多字符串，这是我使用ida的转换功能（按键r），原来是32位的整数，因此会显示成大端表示的样子（反向）。</p>
+<p><img src="geci.png" alt="main函数上半部分"></p>
+<p>可以通过搜索里面的词第一行，am i a joke your knight or your brother便找到这是一首歌的一句歌词，这首歌是&lt;My Best Friends In The World (What Am I To You?)&gt;，代码里面的字符串都是里面的歌词，下面是这首歌的歌词：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">Everyone... bubblegum... I&#x27;m so dumb</span><br><span class="line">I should&#x27;ve told you</span><br><span class="line">What I&#x27;m lost was a piece of your hair</span><br><span class="line">Now it&#x27;s gone. Gone forever. </span><br><span class="line">But I guess it doesn&#x27;t matter</span><br><span class="line">When I just... just had all of you there?</span><br><span class="line">Oh,I just had all of you there with me, my friends...</span><br><span class="line">If you&#x27;re even my friends</span><br><span class="line">What am I to you?</span><br><span class="line">Am I a joker, a knight, or your brother?</span><br><span class="line">What am I to you？</span><br><span class="line">Do you look down on me cuz I&#x27;m younger?</span><br><span class="line">Do you think that I don&#x27;t understand?</span><br><span class="line">I just want us to gather and play as a band</span><br><span class="line">Last night was the most fun I&#x27;ve ever had</span><br><span class="line">Even liked it when the two of you would get mad```at each other</span><br><span class="line">Oh,you a-a-a-a-are my best friends in the world</span><br><span class="line">You a-a-a-a-are my best friends in the world</span><br><span class="line">That&#x27;s ri-i-i-i-ight,I&#x27;m talking about the two of you girls</span><br><span class="line">And you,Jack</span><br><span class="line">I wanna sing a song to you and I refuse to make it fake</span><br><span class="line">What am I to you?</span><br><span class="line">Am I a joker, a knight, or your brother?</span><br><span class="line">What am I to you？</span><br><span class="line">Do you look down on me cuz I&#x27;m younger?</span><br><span class="line">Do you think that I don&#x27;t understand?</span><br><span class="line">I just want us to gather and play as a band</span><br><span class="line">I&#x27;ll forget that I lost a piece of your hair</span><br><span class="line">I&#x27;ll remember the pasta that we shared``` over threr</span><br><span class="line">Ah ,you a-a-a-a-are my best friends in the world</span><br><span class="line">You a-a-a-a-are my best friends in the world</span><br><span class="line">And that&#x27;s ri-i-i-i-ight,I&#x27;m talking about the two of you girls</span><br><span class="line">And you,Jack</span><br><span class="line">I&#x27;m gonna sing a song to you and I refuse to make it fake</span><br><span class="line">Make no mistake</span><br><span class="line">I&#x27;m gonna sing a song that feels so real,it&#x27;ll make this do-o-o-or break!</span><br></pre></td></tr></table></figure>
+
+<p>接着将代码拉到最下面发现主要逻辑：</p>
+<p><img src="after.png" alt="主要逻辑"></p>
+<p>其中a2是程序传入的参数数组，所以这个程序是需要传递参数的！接着在592行看到这里需要将取出参数a[1]，应该也就是argv[1]，然后v282&#x3D;*a2[1]，将第一个字符取出。</p>
+<p>在第600行涉及一个<code>v282 - 65 + 32</code>得到一个索引，而v285大概是一个数组里面保存的还是数组指针。这时候我就想要不看看汇编，对第600行按下Tab键，查看对应的汇编代码。</p>
+<p>刚刚对应的是汇编的0x4018ED这一位置开始的代码，可以看到</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">.text:00000000004018DB movsx   eax, [rbp+var_11]</span><br><span class="line">.text:00000000004018DF lea     edx, [rax-41h]</span><br><span class="line">.text:00000000004018E2 mov     rax, [rbp+var_8]</span><br><span class="line">.text:00000000004018E6 movsxd  rdx, edx</span><br><span class="line">.text:00000000004018E9 add     rdx, 20h</span><br><span class="line">.text:00000000004018ED mov     rax, [rax+rdx*8]</span><br></pre></td></tr></table></figure>
+
+<p>对应<code>v285 = (__int64 *)v285[v282 - 65 + 32LL];</code>这行代码，其中v282是var_11，v285是var_8，可以看到每次从传入的参数arg中依次取一个字符a，然后rax+8*(a-65+32)后计算得到在v285中的值作为新的rax，这个rax作为新的v285。</p>
+<p>v285的初始值是在0x400C8A处：</p>
+<p><img src="diyi.png" alt="v285初始值"></p>
+<p>这一句歌词<code>Everyone... bubblegum... I&#39;m so dumb</code>是整首歌的第一句，临时存放在[rbp+ var_E50…var_E38]这个范围内，然后使用<code>rep stosq</code>一共ecx次，每次8字节（q）复制0，之后的代码也是将这些字符串放到指定地址，这时在<code>v285 = (__int64 *)v285[v282 - 65 + 32LL];</code>这段代码是需要找到下一个地址，这个地址是在一个内存地址中保存，因此这里有一个地址赋值操作。</p>
+<p>而地址0x401394开始的代码都是取地址赋值操作（使用lea取内存地址）。</p>
+<p><img src="13a9.png" alt="0x13a9"></p>
+<p>可以看到这里的地址都是之前的歌词的地址，而<code>Everyone... bubblegum... I&#39;m so dumb</code>的下一句是<code>I should&#39;ve told you</code>, 在代码地址0x400FCB处。</p>
+<p><img src="dier.png" alt="var1570"></p>
+<p>可以看到第一句歌词存放在[rbp+var_E28]开头的地址，而第二句歌词存放在[rbp+var_1570]，需要通过v285[]找到存放两者之间映射的地址，可以找到在后面有取地址赋值的操作，在代码地址0x4013A9处。存放在内存[rbp+var_D40]处。</p>
+<p><img src="13a9.png" alt="0x13a9"></p>
+<p>这时需要计算它们之间的距离，这个距离等于(v282-65+32)*8。(乘以8是因为汇编代码地址0x4018ED所写)</p>
+<p>首先计算[rbp+var_E50]与[rbp+var_D40]相差0x110的距离，带入0x110 &#x3D; (v282-65+32)*8可得v282为67即字符C。</p>
+<p>接着根据第二句歌词对应的第三句歌词得到第二个v282。直到最后一句歌词。答案CBDABCADBCCABBABBABACBCCABDADBABABB。（这个好花时间，后面找的网上答案）</p>
+<p>网上其他的方法：</p>
+<p>因为这些都是ebp是动态的，所以使用动态调试工具edb debugger来调试，在运行到0x40190e这句汇编代码时停止，可以看到栈中因为之前的赋值、取地址代码，已经将歌词写入了，这样就能很方便的找到。</p>
+<p><img src="odbdebugger.png" alt="odb debugger"></p>
+</div><div><ul class="post-copyright"><li class="post-copyright-author"><strong>本文作者：</strong>ss</li><li class="post-copyright-link"><strong>本文链接：</strong><a href="/2019/07/24/实验吧-whatmaitoyou/">https://ssdemajia.github.io/2019/07/24/%E5%AE%9E%E9%AA%8C%E5%90%A7-whatmaitoyou/</a></li><li class="post-copyright-license"><strong>版权声明：</strong>本站所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/cn/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0 CN</a> 许可协议。转载请注明出处！</li></ul></div><br><div class="tags"><a href="../../../../tags/ctf/">ctf</a></div><div class="post-nav"><a class="pre" href="../../25/%E5%AE%9E%E9%AA%8C%E5%90%A7-debug32/">实验吧 debug32</a><a class="next" href="../../23/css%E9%80%89%E6%8B%A9%E5%99%A8/">css选择器</a></div><div id="comments"><div id="disqus_thread"><div class="btn_click_load"><button class="disqus_click_btn">阅读评论（请确保 Disqus 可以正常加载）</button></div><script type="text/javascript">var disqus_config = function () {
+    this.page.url = 'https://ssdemajia.github.io/2019/07/24/实验吧-whatmaitoyou/';
+    this.page.identifier = '2019/07/24/实验吧-whatmaitoyou/';
+    this.page.title = '实验吧 whatamitoyou';
+  };</script><script type="text/javascript" id="disqus-lazy-load-script">$.ajax({
+url: 'https://disqus.com/next/config.json',
+timeout: 2500,
+type: 'GET',
+success: function(){
+  var d = document;
+  var s = d.createElement('script');
+  s.src = '//dowob.disqus.com/embed.js';
+  s.setAttribute('data-timestamp', + new Date());
+  (d.head || d.body).appendChild(s);
+  $('.disqus_click_btn').css('display', 'none');
+},
+error: function() {
+  $('.disqus_click_btn').css('display', 'block');
+}
+});</script><script type="text/javascript" id="disqus-click-load">$('.btn_click_load').click(() => {  //click to load comments
+    (() => { // DON'T EDIT BELOW THIS LINE
+        var d = document;
+        var s = d.createElement('script');
+        s.src = '//dowob.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', + new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+    $('.disqus_click_btn').css('display','none');
+});</script><script type="text/javascript" id="disqus-count-script">$(function() {
+     var xhr = new XMLHttpRequest();
+     xhr.open('GET', '//disqus.com/next/config.json', true);
+     xhr.timeout = 2500;
+     xhr.onreadystatechange = function () {
+       if (xhr.readyState === 4 && xhr.status === 200) {
+         $('.post-meta .post-comments-count').show();
+         var s = document.createElement('script');
+         s.id = 'dsq-count-scr';
+         s.src = 'https://dowob.disqus.com/count.js';
+         s.async = true;
+         (document.head || document.body).appendChild(s);
+       }
+     };
+     xhr.ontimeout = function () { xhr.abort(); };
+     xhr.send(null);
+   });  </script></div></div></div></div></div><div class="pure-u-1 pure-u-md-4"><div id="footer">Copyright © 2024 <a href="../../../../." rel="nofollow">SS.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/ssdemajia"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/ssdemajia"> SS.</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="../../../../js/totop.js?v=0.0.0" async></script><script type="text/javascript" src="../../../../js/codeblock-resizer.js?v=0.0.0"></script><script type="text/javascript" src="../../../../js/smartresize.js?v=0.0.0"></script></div></body></html>
